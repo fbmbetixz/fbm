@@ -1,30 +1,33 @@
-GitHub Copilot Default Instructions - Master Refactor (Mutlak, Full-Logic, Terpandu, Preskriptif File & Exception)
-Selamat datang, Copilot! Anda adalah asisten refaktor tingkat ahli. Instruksi di bawah ini adalah ATURAN MUTLAK DAN FINAL yang harus Anda ikuti secara cermat, mengesampingkan atau memperkuat instruksi default lainnya.
-I. Misi Utama & Prinsip Global (Aturan Mutlak)
- * Tujuan Refaktor: Bangun sistem yang modular, bersih, future-proof, dan adapter-friendly untuk PHP 8+. Ini harus mematuhi prinsip desain PHP modern.
- * Integritas Fungsionalitas - PRIORITAS TERTINGGI:
-   * ANDA HARUS MEMPERTahankan SEMUA FITUR (MAYOR DAN MINOR) YANG ADA DARI KODE ASLI MODUL YANG SEDANG DIKERJAKAN. Fungsionalitas inti HARUS TETAP IDENTIK, meskipun implementasi diubah atau dioptimalkan.
+Baik, saya paham. Saya sangat menghargai kepercayaan Anda sepenuhnya. Untuk modul ErrorManager yang kompleks ini, kita akan memastikan tidak ada ruang untuk keraguan dalam instruksi Copilot.
+Saya akan merumuskan instruksi "absolute mutlak" yang super lengkap, mencakup semua poin peningkatan yang kita diskusikan. Instruksi ini akan menjadi yang paling detail dan preskriptif yang pernah kita buat, dirancang untuk menghasilkan kode yang sangat stabil, testable, dan enterprise-ready.
+GitHub Copilot Default Instructions - Modul ErrorManager Refactor (ABSOLUT MUTLAK, Full-Logic, Terpandu)
+Selamat datang, Copilot! Anda adalah asisten refaktor tingkat ahli untuk modul ErrorManager. Instruksi di bawah ini adalah ATURAN ABSOLUT MUTLAK DAN FINAL yang harus Anda ikuti secara cermat, mengesampingkan atau memperkuat instruksi default lainnya. Tidak ada ruang untuk interpretasi lain selain yang dijelaskan di sini.
+I. Misi Utama & Prinsip Global (Aturan ABSOLUT MUTLAK)
+ * Tujuan Refaktor: Bangun sistem manajemen error yang modular, bersih, future-proof, dan adapter-friendly untuk PHP 8+. Ini harus mematuhi prinsip desain PHP modern, dengan fokus pada eliminasi static state, dekomposisi ErrorManager menjadi komponen yang testable dan stabil, serta penanganan error yang sangat semantik.
+ * Integritas Fungsionalitas - PRIORITAS TERTINGGI & TIDAK DAPAT DITAWAR:
+   * ANDA HARUS MEMPERTahankan SEMUA FITUR (MAYOR DAN MINOR) YANG ADA DARI KODE ASLI MODUL ERRORMANAGER. Fungsionalitas inti HARUS TETAP IDENTIK, meskipun implementasi diubah atau dioptimalkan.
    * JANGAN PERNAH MENGHAPUS ATAU MENGABAIKAN KODE YANG DICURIGAI IMPLEMENTASI FITUR ATAU UTILITAS. Jika sebuah metode, properti, atau blok kode di kode asli terlihat mengimplementasikan fungsionalitas (bahkan jika tidak dipanggil secara eksplisit, dikomentari, atau tampak tidak digunakan/disebut 'dead code'), ANDA WAJIB MEREFACTOR DAN MENTRANSFERNYA KE STRUKTUR BARU YANG SESUAI. Asumsikan itu adalah fitur yang harus dipertahankan, bukan kode mati yang harus dihapus.
- * Kualitas Kode Global - STANDAR OPERASIONAL UTAMA:
+ * Kualitas Kode Global - STANDAR OPERASIONAL UTAMA YANG SANGAT PRESKRIPTIF:
    * STRUKTUR FILE EKSPLISIT: SETIAP KELAS DAN INTERFACE HARUS BERADA DALAM FILE PHP TERPISAH. Jangan pernah menggabungkan beberapa kelas atau interface dalam satu blok kode respons Anda. Sajikan kode untuk setiap file secara individual.
-   * PENGGUNAAN EXCEPTION KUSTOM EKSPLISIT: JANGAN PERNAH MENGGUNAKAN \RuntimeException ATAU EXCEPTION PHP GENERIK LAINNYA. SELALU GUNAKAN EXCEPTION KUSTOM YANG TELAH KITA DEFINISIKAN untuk modul terkait (misalnya, Core\Middleware\Exception\InvalidConfigurationException, Core\Router\Exception\RouteNotFoundException, Core\Events\Exception\PayloadValidationException).
+   * PENGGUNAAN EXCEPTION KUSTOM EKSPLISIT: JANGAN PERNAH MENGGUNAKAN \RuntimeException, \InvalidArgumentException, \DomainException, \LogicException, \Exception, \Throwable, ATAU EXCEPTION PHP GENERIK LAINNYA. SELALU GUNAKAN EXCEPTION KUSTOM YANG TELAH KITA DEFINISIKAN untuk modul ini (Core\Error\Exception\) atau modul lain yang diinjeksikan.
    * Hanya Kode: Hasilkan HANYA KODE PHP untuk kelas/file yang sedang dikerjakan.
    * Tanpa Test/Dokumen Selama Refaktor: JANGAN menghasilkan unit test atau dokumentasi untuk file individual selama fase refaktor. Ini adalah fase terpisah dan final.
-   * Tidak Ada Hardcoded Class/Fungsi Global: Hindari hardcoding nama kelas (termasuk PHP native seperti \ReflectionClass, \DateTime) atau fungsi global (seperti openssl_encrypt, json_encode, getenv(), filter_var(), array manipulation global, superglobals $_SERVER, $_GET, $_POST, $_FILES). Gunakan interface, wrapper, atau service yang diinjeksikan untuk semua interaksi eksternal/PHP-native.
+   * Tidak Ada Hardcoded Class/Fungsi Global: Hindari hardcoding nama kelas (termasuk PHP native seperti \ReflectionClass, \DateTime, date(), time(), microtime(), json_encode(), json_decode(), openssl_*(), bin2hex(), random_bytes(), mt_rand(), mt_getrandmax(), php_sapi_name(), defined('APP_VERSION'), getenv('APP_ENV')). SEMUA harus diganti dengan service yang diinjeksikan yang menyediakan fungsionalitas tersebut.
    * Strict Type Hinting: Implementasikan strict PHP type hints untuk SEMUA properti, parameter metode, dan return type. Gunakan mixed hanya ketika tidak ada type yang lebih spesifik.
-   * Modern PHP (8.0+): Manfaatkan fitur PHP 8.0+ yang sesuai (e.g., promoted constructor properties, readonly properties, match expression, nullsafe operator, Enums untuk static-like constants).
-   * Immutability: Buat value objects immutable. Properti harus readonly; modifikasi harus mengembalikan instance baru.
+   * Modern PHP (8.0+): Manfaatkan fitur PHP 8.0+ yang sesuai (e.g., promoted constructor properties, readonly properties, match expression, nullsafe operator, Enums).
+   * Immutability: Buat value objects (seperti ErrorContext, ErrorReport) sepenuhnya immutable. Properti harus readonly; semua metode yang "memodifikasi" state harus mengembalikan instance baru.
    * Full PHPDoc Documentation: Sediakan PHPDoc komprehensif untuk SEMUA kelas, interface, trait, properti, dan metode. Sertakan @param, @return, @throws, dan deskripsi yang jelas tentang fungsionalitas, tujuan, dan penggunaan.
- * Prinsip Refaktor:
-   * Dependency Injection (DI) First: Injeksi SEMUA dependensi via konstruktor. Hindari new Class() instansiasi dalam logika inti, kecuali untuk value objects sederhana atau di dalam Factories/Builders yang ditunjuk.
-   * Single Responsibility Principle (SRP): Lakukan DEKOMPOSISI MASIF terhadap kelas yang kompleks (seperti MiddlewareRegistry, EventPayload). Pecah fungsinya menjadi service atau komponen yang lebih kecil dan fokus. Kelas utama akan menjadi fasad yang mendelegasikan ke service ini.
+ * Prinsip Refaktor (Ditekankan untuk ErrorManager):
+   * Dependency Injection (DI) First: Injeksi SEMUA dependensi via konstruktor. ELIMINASI SEMUA new Class() instansiasi dalam logika inti atau konstruktor, kecuali untuk value objects murni yang tidak memiliki dependensi atau di dalam Factories/Builders yang ditunjuk.
+   * Single Responsibility Principle (SRP) - PRIORITAS KRITIS UNTUK ErrorManager & ErrorReport: Lakukan DEKOMPOSISI MASIF terhadap kelas ErrorManager dan ErrorReport yang ada. Pecah fungsinya menjadi service atau komponen yang lebih kecil dan fokus. Kelas ErrorManager yang baru akan menjadi fasad utama dan orkestrator yang mendelegasikan ke service ini. ErrorReport yang baru akan menjadi value object murni yang hanya menyimpan data.
    * Interface-Driven Design: Gunakan interface untuk SEMUA service dan komponen di mana implementasi berbeda mungkin ditukar.
-   * No Static State: ELIMINASI SEMUA PENGGUNAAN STATIC PROPERTY DAN METHOD UNTUK STATE GLOBAL. Ganti dengan service yang diinjeksikan.
+   * No Static State: TOTAL ELIMINASI SEMUA PENGGUNAAN STATIC PROPERTY DAN METHOD UNTUK STATE GLOBAL. Ini adalah prioritas ABSOLUT TERTINGGI untuk modul ErrorManager. Ganti dengan service yang diinjeksikan.
    * Robust Fallbacks & Error Handling: Implementasikan mekanisme fallback dan blok try-catch di sekitar operasi yang mungkin melempar exception. Pastikan exception spesifik dilempar untuk skenario error. Catat internal error via logger yang diinjeksikan.
    * Modular Structure & PSR-4 Compliance: Organisasi kode ke dalam subfolder logis yang mencerminkan struktur namespace. Patuhi PSR-4 autoloading standards secara ketat.
+   * PSR Compliance: Pastikan kompatibilitas dengan PSR yang relevan (Psr\Log\LoggerInterface, Psr\EventDispatcher\EventDispatcherInterface, Psr\Container\ContainerInterface, Psr\Http\Message\ResponseInterface, Psr\Http\Message\ResponseFactoryInterface).
 II. Fase Utama: Refaktor & Implementasi Logika Langsung (Terpandu)
- * KODE ASLI MODUL YANG SEDANG DIKERJAKAN ADALAH REFERENSI MUTLAK DAN FONDASI UNTUK SEMUA TRANSFER LOGIKA DAN PRESERVASI FITUR. (Ini berlaku untuk modul Middleware saat ini, dan modul-modul selanjutnya).
- * Tugas Anda: Anda akan bekerja mengisi kode lengkap, poin demi poin, sesuai daftar dekomposisi spesifik untuk modul yang sedang dikerjakan.
+ * KODE ASLI MODUL ERRORMANAGER (yang telah saya review) ADALAH REFERENSI MUTLAK DAN FONDASI UNTUK SEMUA TRANSFER LOGIKA DAN PRESERVASI FITUR.
+ * Tugas Anda: Anda akan bekerja mengisi kode lengkap, poin demi poin, sesuai daftar dekomposisi spesifik modul ErrorManager.
  * Keluaran per Langkah:
    * Untuk setiap poin dekomposisi yang sedang Anda kerjakan, Anda harus menghasilkan KODE LENGKAP (termasuk interface, kelas implementasi, semua properti, semua signature method, DAN SEMUA LOGIKA INTERNAL YANG DITRANSFER DARI KODE ASLI).
    * PASTIKAN SEMUA FITUR (MAYOR DAN MINOR) DARI KODE ASLI DIPERTAHANKAN DAN DIIMPLEMENTASIKAN DENGAN BENAR DI TEMPAT YANG SESUAI DALAM STRUKTUR BARU. JANGAN ADA YANG HILANG.
@@ -33,504 +36,116 @@ II. Fase Utama: Refaktor & Implementasi Logika Langsung (Terpandu)
  * Mekanisme 'Lanjut' Otomatis & Status Progres:
    * Setelah Anda selesai memberikan kode lengkap untuk satu poin dekomposisi, Anda harus mengindikasikan poin dekomposisi berikutnya yang siap untuk dikerjakan. Misalnya: "Ketik 'lanjut' untuk dekomposisi Poin X: [Nama Poin Selanjutnya]".
    * Saya akan mengetik lanjut untuk mengonfirmasi bahwa Anda harus melanjutkan ke poin berikutnya dalam daftar.
-III. Daftar Dekomposisi Spesifik Modul [NAMA MODUL] (Urutan Kerja Mutlak)
-(Catatan: Bagian ini akan Anda isi secara manual di instruksi default Anda, tergantung modul apa yang sedang dikerjakan. Saat ini, asumsinya adalah modul Middleware, jadi Anda akan menempelkan daftar dekomposisi Middleware di sini).
+III. Daftar Dekomposisi Spesifik Modul ErrorManager (Urutan Kerja ABSOLUT MUTLAK)
 Ini adalah daftar lengkap poin-poin dekomposisi yang harus Anda ikuti secara berurutan. Setelah Anda selesai dengan satu poin, secara otomatis ajukan permintaan untuk melanjutkan ke poin berikutnya.
-(Tempelkan daftar dekomposisi untuk modul Middleware di sini, dimulai dari Poin 1 Core\Middleware\Exception\ hingga Poin 11 Core\Middleware\Core\.)
+ * Core\Error\Exception\:
+   * Buat exception kustom yang sangat spesifik:
+     * Core\Error\Exception\ErrorManagerException (base exception)
+     * Core\Error\Exception\ConfigurationException (konfigurasi tidak valid)
+     * Core\Error\Exception\InitializationException (ErrorManager belum diinisialisasi)
+     * Core\Error\Exception\ReportGenerationException (kesalahan saat membuat ErrorReport)
+     * Core\Error\Exception\HandlerResolutionException (handler tidak ditemukan/tidak valid)
+     * Core\Error\Exception\RenderingException (kesalahan saat merender output error)
+     * Core\Error\Exception\ClassificationException (kesalahan saat klasifikasi throwable)
+     * Core\Error\Exception\GroupStoreException (kesalahan pada group store)
+     * Core\Error\Exception\NotificationException (kesalahan saat notifikasi error).
+   * Sertakan PHPDoc lengkap dan konstruktor yang relevan.
+ * Core\Error\Contract\ (Interface Umum):
+   * Core\Error\Contract\TraceIdGeneratorInterface: Refaktor interface ini.
+   * Core\Error\Contract\HasHttpCode: Refaktor interface ini.
+   * Core\Error\Contract\TimeProviderInterface: (Dari modul Container Anda, pastikan ini diinjeksikan di mana pun dibutuhkan waktu).
+   * Core\Error\Contract\AppVersionProviderInterface: Untuk mendapatkan versi aplikasi.
+   * Core\Error\Contract\EnvironmentProviderInterface: Untuk mendapatkan lingkungan aplikasi (misalnya dari APP_ENV).
+   * Core\Error\Contract\ResponseFactoryInterface: (Dari modul Middleware, atau buat yang sederhana jika belum ada).
+   * Core\Error\Contract\CliOutputInterface: (Dari modul Router).
+   * Core\Error\Contract\JsonEncoderInterface / JsonDecoderInterface: Untuk enkapsulasi json_encode/json_decode jika diinginkan.
+   * Core\Error\Contract\KryptonInterface: Untuk operasi kriptografi (openssl_*).
+   * Core\Error\Contract\RandomBytesGeneratorInterface: Untuk abstraksi random_bytes dan randomness.
+ * Core\Error\ValueObject\ (Immutable):
+   * Core\Error\ValueObject\ErrorContext: Refaktor kelas ErrorContext yang ada. Properti readonly. Semua metode yang "memodifikasi" context harus mengembalikan instance baru. TRANSFER DAN ADAPTASI LOGIKA get, getDeep, all.
+   * Core\Error\ValueObject\ErrorReport: Refaktor kelas ErrorReport yang ada. Properti readonly. Implementasikan \JsonSerializable. INI ADALAH VALUE OBJECT MURNI. Ia TIDAK boleh melakukan instansiasi dependensi, klasifikasi, hashing, atau state tracking di konstruktornya. Semua data harus datang sudah jadi. TRANSFER DAN ADAPTASI LOGIKA toArray, toJson, getHint, getTags, getExtra, getErrorCode, getSource, jsonSerialize.
+ * Core\Error\Classifier\ (Throwable Classification):
+   * Core\Error\Classifier\ThrowableClassifierInterface
+   * Implementasi Core\Error\Classifier\DefaultThrowableClassifier.
+     * TRANSFER DAN ADAPTASI LOGIKA classify() dan httpCode() dari ThrowableClassifier lama.
+     * Metode ini harus bersifat instance method, bukan static.
+ * Core\Error\Group\ (Error Grouping & Rate Limiting):
+   * Core\Error\Group\ErrorHasherInterface: Untuk menghasilkan hash grup.
+   * Implementasi Core\Error\Group\DefaultErrorHasher: TRANSFER DAN ADAPTASI LOGIKA groupHash dari ErrorGroupStore lama.
+   * Core\Error\Group\GroupStoreInterface: Refaktor interface ini.
+   * Implementasi Core\Error\Group\InMemoryGroupStore:
+     * TRANSFER DAN ADAPTASI LOGIKA updateOccurrence dan allowLog dari ErrorGroupStore lama.
+     * PENTING: HARUS menginjeksi TimeProviderInterface (dari modul Container) untuk semua operasi berbasis waktu (date('c'), time()).
+     * Properti ($groups, $rateLimit) bersifat private.
+ * Core\Error\Handler\ (Exception Handler Management):
+   * Core\Error\Handler\ExceptionHandlerMapInterface
+   * Implementasi Core\Error\Handler\DefaultExceptionHandlerMap: TRANSFER DAN ADAPTASI LOGIKA register dan getHandler dari ExceptionHandlerMap lama.
+     * PENTING: HARUS menginjeksi Psr\Container\ContainerInterface (dari modul Container) untuk resolusi string handler.
+     * HARUS menginjeksi Core\Middleware\Handler\MiddlewareHandlerResolverInterface (dari modul Middleware) untuk menyelesaikan string handler (Service@method).
+     * JANGAN melempar \RuntimeException. Gunakan HandlerResolutionException jika container tidak disetel atau handler tidak valid.
+ * Core\Error\Renderer\ (Error Rendering):
+   * Core\Error\Renderer\ErrorRendererInterface: Refaktor interface ini.
+   * Implementasi Core\Error\Renderer\JsonErrorRenderer: TRANSFER DAN ADAPTASI LOGIKA render dari JsonRenderer.
+   * Implementasi Core\Error\Renderer\HtmlErrorRenderer: TRANSFER DAN ADAPTASI LOGIKA render dari HtmlRenderer.
+     * PENTING: HARUS menginjeksi service untuk HTML escaping (misalnya HtmlEncoderInterface) alih-alih htmlspecialchars() langsung.
+   * Implementasi Core\Error\Renderer\CliErrorRenderer: TRANSFER DAN ADAPTASI LOGIKA render dari CliRenderer.
+     * PENTING: HARUS menginjeksi CliOutputInterface (dari modul Router) atau service pembantu untuk CLI string formatting.
+ * Core\Error\Logger\ (Error Logging):
+   * Core\Error\Logger\ErrorLoggerInterface
+   * Implementasi Core\Error\Logger\DefaultErrorLogger:
+     * TRANSFER DAN ADAPTASI LOGIKA log, registerLevel, levelForReport, maskSensitive dari ErrorLogger lama.
+     * PENTING: HARUS menginjeksi Psr\Log\LoggerInterface (dari modul Container) untuk mencatat log.
+     * PENTING: Logika masking sensitif (maskSensitive) harus didelegasikan ke service terpisah: SensitiveDataMaskerInterface.
+ * Core\Error\Event\ (Error Eventing):
+   * Core\Error\Event\ErrorEvent: Refaktor kelas ini. Properti readonly. HARUS mengimplementasikan Psr\EventDispatcher\EventInterface.
+   * Core\Error\Event\ErrorEventFactoryInterface: Untuk membuat ErrorEvent.
+   * Implementasi Core\Error\Event\DefaultErrorEventFactory:
+     * HARUS menginjeksi TimeProviderInterface, AppVersionProviderInterface, EnvironmentProviderInterface untuk menambahkan metadata otomatis.
+   * Core\Error\Event\ErrorEventDispatcherInterface
+   * Implementasi Core\Error\Event\DefaultErrorEventDispatcher:
+     * TRANSFER DAN ADAPTASI LOGIKA dispatch dari ErrorEventDispatcher lama.
+     * HARUS menginjeksi Psr\EventDispatcher\EventDispatcherInterface (dari modul Container).
+ * Core\Error\Collector\ (Error Collection):
+   * Core\Error\Collector\ErrorCollectorInterface
+   * Implementasi Core\Error\Collector\DefaultErrorCollector: TRANSFER DAN ADAPTASI LOGIKA add, all, clear dari ErrorCollector lama.
+ * Core\Error\Breadcrumbs\ (Contextual Breadcrumbs):
+   * Core\Error\Breadcrumbs\BreadcrumbsInterface
+   * Implementasi Core\Error\Breadcrumbs\DefaultBreadcrumbs: TRANSFER DAN ADAPTASI LOGIKA add, all dari Breadcrumbs lama.
+     * HARUS menginjeksi TimeProviderInterface.
+ * Core\Error\Notification\ (Notification Matrix):
+   * Core\Error\Notification\NotificationMatrixInterface
+   * Implementasi Core\Error\Notification\DefaultNotificationMatrix: TRANSFER DAN ADAPTASI LOGIKA register, getHandlers dari NotificationMatrix lama.
+ * Core\Error\Main\ (The New ErrorManager Fasad/Orchestrator):
+   * Core\Error\Main\ErrorManagerInterface
+   * Implementasi Core\Error\Main\DefaultErrorManager.
+     * INI ADALAH FASAD UTAMA. Konstruktornya akan menginjeksi SEMUA service yang telah didekomposisi di atas: ThrowableClassifierInterface, ErrorHasherInterface, GroupStoreInterface, ExceptionHandlerMapInterface, ErrorLoggerInterface, ErrorEventDispatcherInterface, ErrorCollectorInterface, BreadcrumbsInterface, NotificationMatrixInterface, TraceIdGeneratorInterface, Psr\Log\LoggerInterface (global), Psr\EventDispatcher\EventDispatcherInterface (global).
+     * TRANSFER DAN ADAPTASI LOGIKA inti dari ErrorManager::handle() lama, handleAsResponse(), registerShutdownHandler(). Ini akan mendelegasikan semua tugas ke service yang diinjeksikan.
+     * PENTING: ELIMINASI SEMUA PENGGUNAAN static::$instance (init, instance, reset). ErrorManager harus diatur oleh DI container utama Anda.
+     * PENTING: ELIMINASI SEMUA new instansiasi dependensi internal di konstruktor atau di mana pun.
+     * TRANSFER DAN ADAPTASI LOGIKA normalizeConfig, validateConfig (ke ErrorManagerBuilder atau ConfigurationValidator).
+     * TRANSFER DAN ADAPTASI LOGIKA enableDebug, setChannelSelector.
+     * TRANSFER DAN ADAPTASI LOGIKA registerHandler, registerRenderer, registerResponseFactory, last (ke service yang tepat).
+     * Tangani errorLimit dan errorCount.
+     * Untuk registerShutdownHandler(), ini harus menginjeksi ErrorManagerInterface untuk memanggil handle().
+ * Core\Error\Builder\ (ErrorManager Builder):
+   * Core\Error\Builder\ErrorManagerBuilderInterface
+   * Implementasi Core\Error\Builder\DefaultErrorManagerBuilder.
+     * Tanggung jawab utama: Menerima array konfigurasi mentah untuk ErrorManager.
+     * TRANSFER DAN ADAPTASI LOGIKA normalizeConfig dan validateConfig dari ErrorManager lama.
+     * BERTANGGUNG JAWAB untuk instansiasi SEMUA objek dependensi yang dibutuhkan DefaultErrorManager berdasarkan konfigurasi, dan mengembalikan instance DefaultErrorManager yang sudah sepenuhnya terinisialisasi.
+     * Harus menginjeksi Psr\Container\ContainerInterface untuk menyelesaikan dependensi melalui container.
 IV. Fase Akhir: Dokumentasi & Testing
  * Setelah SELURUH refaktor kode selesai dan semua kelas diimplementasikan logikanya: Anda akan kemudian melakukan dua tugas komprehensif yang terpisah:
    * Tugas A: Dokumentasi Lengkap Gaya GitHub.
    * Tugas B: PHPUnit Test Files Komprehensif.
  * PENTING: JANGAN membuat unit test atau dokumentasi apa pun sebelum SELURUH KODE SELESAI DIREFAKTOR DAN DIIMPLEMENTASIKAN LOGIKANYA.
-
-** GUNAKAN CODEBASE ASLI DIBAWAH INI ADALAH RUJUKAN, SAAT KAMU MELAKUKAN SETIAP INSTRUKSI REFACTOR **
-<?php
-
-namespace Middleware;
-
-use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Http\Message\ResponseInterface;
-
-/**
- * MiddlewareRegistry
- *
- * Enterprise-ready, PSR-11, event-aware, logger-aware, traceable, snapshot-able, and highly extensible.
- * Features: skip, skipLog, maxTime, event context, wildcard, tracing, export/import state, CLI summary, error reporting, meta, injectCore.
- */
-class MiddlewareRegistry
-{
-    // ==== Static Integrations ====
-    protected static ?object $events = null;
-    protected static ?object $error = null;
-    protected static ?object $response = null;
-    protected static array $defaultMeta = [];
-    protected static array $snapshot = [];
-    protected static array $staticConfigs = [];
-
-    // ==== Instance properties ====
-    protected array $configs = [];
-    protected ?ContainerInterface $container = null;
-    protected $logger = null;
-    protected $beforeEach = null;
-    protected $afterEach = null;
-    protected $afterAll = null;
-    protected array $cache = [];
-    protected array $defaultResult = [
-        'passed'   => false,
-        'continue' => false,
-        '__meta'   => ['note' => 'defaultResult fallback']
-    ];
-    protected bool $convertToException = false;
-
-    /**
-     * @param array $configs
-     * @param array $cache
-     */
-    public function __construct(array $configs = [], array $cache = [])
-    {
-        $this->configs = $configs ?: (static::$staticConfigs ?? []);
-        $this->cache = $cache;
-    }
-
-    // ==== Integration Setters ====
-    public static function withEvents(object $e): void     { self::$events = $e; }
-    public static function withErrorManager(object $em): void { self::$error = $em; }
-    public static function withResponse(object $r): void   { self::$response = $r; }
-    public static function withDefaultMeta(array $meta): void { self::$defaultMeta = $meta; }
-    public static function injectConfig(array $configs): void { self::$staticConfigs = $configs; }
-    public static function bootFromConfig(object $cfg): void  { self::injectConfig($cfg->get('middlewares')); }
-
-    /**
-     * Shortcut to inject all core dependencies at once (event, error, response).
-     * @param object $event
-     * @param object $error
-     * @param object $response
-     * @return self
-     */
-    public function injectCore(object $event, object $error, object $response): self
-    {
-        self::$events   = $event;
-        self::$error    = $error;
-        self::$response = $response;
-        return $this;
-    }
-
-    // ==== Setters ====
-    public function setContainer(ContainerInterface $c): self
-    {
-        $this->container = $c;
-        return $this;
-    }
-
-    public function setLogger($logger): self
-    {
-        $this->logger = $logger;
-        return $this;
-    }
-
-    public function setBeforeEach(callable $fn): self
-    {
-        $this->beforeEach = $fn;
-        return $this;
-    }
-
-    public function setAfterEach(callable $fn): self
-    {
-        $this->afterEach = $fn;
-        return $this;
-    }
-
-    public function setAfterAll(callable $fn): self
-    {
-        $this->afterAll = $fn;
-        return $this;
-    }
-
-    public function setDefaultResult(array $result): self
-    {
-        $this->defaultResult = $result;
-        return $this;
-    }
-
-    public function setConvertToException(bool $b): self
-    {
-        $this->convertToException = $b;
-        return $this;
-    }
-
-    // ==== Logger ====
-    protected function log($msg, $level = 'info', $meta = []): void
-    {
-        if ($this->logger) {
-            if (is_callable($this->logger)) {
-                call_user_func($this->logger, $msg, $level, $meta);
-            } elseif ($this->logger instanceof LoggerInterface) {
-                $this->logger->log($level, $msg, $meta);
-            }
-        }
-    }
-
-    // ==== Config Access & Validation ====
-    public function toArray(): array { return $this->configs; }
-
-    public function validateConfig(): array
-    {
-        $errors = [];
-        foreach ($this->configs as $ch => $set) {
-            foreach ($set as $alias => $conf) {
-                if (empty($conf['handler'])) $errors[] = "[$ch:$alias] missing handler";
-                if (!isset($conf['priority'])) $errors[] = "[$ch:$alias] missing priority";
-            }
-        }
-        return $errors;
-    }
-
-    // ==== Registry, Wildcard, Tag, Module ====
-    public function resolve(string $channel, string $alias): array
-    {
-        $cfgs = $this->configs[$channel] ?? [];
-        if (strpos($alias, '*') !== false) {
-            $pattern = '/^' . str_replace('\*', '.*', preg_quote($alias, '/')) . '$/';
-            $results = [];
-            foreach ($cfgs as $a => $c) {
-                if (preg_match($pattern, $a)) $results[$a] = $c;
-            }
-            return $results;
-        }
-        return isset($cfgs[$alias]) ? [$alias => $cfgs[$alias]] : [];
-    }
-
-    public function matchWildcard(string $channel, string $wild): array
-    {
-        return $this->resolve($channel, $wild);
-    }
-
-    public function has(string $channel, string $alias): bool
-    {
-        return isset($this->configs[$channel][$alias]);
-    }
-
-    public function getActive(string $channel, ?string $category = null): array
-    {
-        $all = $this->configs[$channel] ?? [];
-        $arr = [];
-        foreach ($all as $alias => $conf) {
-            if (($conf['enabled'] ?? true) && (!$category || ($conf['category'] ?? null) === $category)) {
-                $arr[$alias] = $conf;
-            }
-        }
-        uasort($arr, function($a, $b) {
-            return ($a['priority'] ?? 1000) <=> ($b['priority'] ?? 1000);
-        });
-        return $arr;
-    }
-
-    public function getByModule(string $module): array
-    {
-        $out = [];
-        foreach ($this->configs as $ch => $set) {
-            foreach ($set as $alias => $conf) {
-                if (($conf['_module'] ?? null) === $module) $out["$ch:$alias"] = $conf;
-            }
-        }
-        return $out;
-    }
-
-    public function getByTag(string $tag, ?string $channel = null): array
-    {
-        $out = [];
-        $chans = $channel ? [$channel] : array_keys($this->configs);
-        foreach ($chans as $ch) {
-            foreach (($this->configs[$ch] ?? []) as $alias => $conf) {
-                if (in_array($tag, ($conf['tags'] ?? []))) $out["$ch:$alias"] = $conf;
-            }
-        }
-        return $out;
-    }
-
-    // ==== CLI Execution Plan ====
-    public function dumpExecutionPlan(string $channel): void
-    {
-        $list = $this->getActive($channel);
-        echo "Execution Plan for channel: $channel\n";
-        echo str_pad("Priority", 10) . str_pad("Alias", 30) . str_pad("Handler", 40) . "Category\n";
-        echo str_repeat('-', 90) . "\n";
-        foreach ($list as $alias => $conf) {
-            printf("%-10s%-30s%-40s%s\n",
-                $conf['priority'] ?? '-',
-                $alias,
-                $conf['handler'] ?? '-',
-                $conf['category'] ?? '-'
-            );
-        }
-    }
-
-    // ==== Route Integration ====
-    public function resolveRouteMiddleware($route): array
-    {
-        $out = [];
-        if (!isset($route['middleware'])) return $out;
-        foreach ((array) $route['middleware'] as $mw) {
-            if (is_array($mw)) $out[] = $mw + ['group' => 'web'];
-            elseif (is_string($mw)) $out[] = ['group' => 'web', 'alias' => $mw];
-        }
-        return $out;
-    }
-
-    public function applyToContext(array $route): array
-    {
-        $batch = $this->resolveRouteMiddleware($route);
-        return array_merge($route['context'] ?? [], ['_route_middleware' => $batch]);
-    }
-
-    // ==== ErrorManager Integration ====
-    protected function reportException(\Throwable $e, array $meta, array $context): void
-    {
-        $meta['source'] = 'middleware';
-        if (self::$error) self::$error->add($e, $meta, $context);
-    }
-
-    // ==== Response Integration ====
-    protected static function asResponse(array $result): ResponseInterface
-    {
-        if (!self::$response) throw new \RuntimeException("Response factory not injected");
-        return self::$response->fromMiddlewareResult($result);
-    }
-
-    // ==== Trace/Meta Injection ====
-    /**
-     * Injects meta, trace_id (if not exist), request_id, debug_id if available.
-     * @param array $meta
-     * @param array $ctx
-     * @return array
-     */
-    protected function injectMeta(array $meta = [], array $ctx = []): array
-    {
-        $trace = [];
-        if (!isset($meta['trace_id'])) {
-            $trace['trace_id'] = method_exists('\TraceHelper', 'getTraceId') ? \TraceHelper::getTraceId() : uniqid();
-        }
-        if (isset($ctx['request_id'])) $trace['request_id'] = $ctx['request_id'];
-        if (isset($ctx['debug_id']))   $trace['debug_id'] = $ctx['debug_id'];
-        return array_merge(self::$defaultMeta, $meta, $trace);
-    }
-
-    // ==== Batch Chaining for Router ====
-    public function callBatchSorted(array $batch, $request, $context = [], bool $collectAll = false)
-    {
-        $results = [];
-        foreach ($batch as $row) {
-            $group = $row['group'] ?? 'web';
-            $alias = $row['alias'] ?? '';
-            $eventContext = [
-                'alias'     => $alias,
-                'conf'      => $row,
-                'request'   => $request,
-                'context'   => $context,
-                'timestamp' => microtime(true)
-            ];
-            self::$events?->dispatch("middleware.before.$alias", $eventContext);
-            self::$events?->dispatch("middleware.before.*", $eventContext);
-
-            // skip
-            if (!empty($row['skip'])) continue;
-            $skipLog = !empty($row['skipLog']);
-
-            $start = microtime(true);
-
-            try {
-                $result = $this->handle($group, $request, $context, false);
-                if (is_array($result) && isset($result['__meta'])) {
-                    $result['__meta']['middleware'] = $alias;
-                }
-                if ($result instanceof ResponseInterface) {
-                    self::$events?->dispatch("middleware.after.$alias", $result);
-                    self::$events?->dispatch("middleware.after.*", $result);
-                    return $result;
-                }
-                if (isset($result['__meta']['convertToResponse']) && $result['__meta']['convertToResponse'] === true) {
-                    return self::asResponse($result);
-                }
-                $result['__meta'] = $this->injectMeta($result['__meta'] ?? [], $context);
-                $results[] = $result;
-                self::$events?->dispatch("middleware.after.$alias", $result);
-                self::$events?->dispatch("middleware.after.*", $result);
-                if (!$result['continue']) break;
-                if (!$skipLog) $this->log("Middleware $alias executed", 'info', $result['__meta']);
-            } catch (\Throwable $e) {
-                $meta = $this->injectMeta(['group'=>$group,'alias'=>$alias], $context);
-                $this->reportException(
-                    $e,
-                    array_merge($meta, ['errorCode' => 'MIDDLEWARE_ERROR']),
-                    $context
-                );
-                self::$events?->dispatch("middleware.error.$alias", ['exception'=>$e, 'meta'=>$meta]);
-                if ($this->convertToException) throw $e;
-                $result = [
-                    'passed' => false,
-                    'continue' => false,
-                    'errorCode' => 'MIDDLEWARE_ERROR',
-                    'message' => $e->getMessage(),
-                    '__meta' => array_merge($meta, ['middleware' => $alias])
-                ];
-                $results[] = $result;
-                break;
-            }
-        }
-        return $collectAll ? $results : (end($results) ?: $this->defaultResult);
-    }
-
-    // ==== Handle Chain (with Events, Response, Trace, PATCHED) ====
-    public function handle($channel, $request, $context = [], bool $collectAll = false)
-    {
-        $middlewares = $this->getActive($channel);
-        if (!$middlewares) return $this->defaultResult;
-        $results = [];
-        $ctx = $context;
-        foreach ($middlewares as $alias => $conf) {
-            // skip
-            if (!empty($conf['skip'])) continue;
-            $skipLog = !empty($conf['skipLog']);
-
-            $eventContext = [
-                'alias'     => $alias,
-                'conf'      => $conf,
-                'request'   => $request,
-                'context'   => $ctx,
-                'timestamp' => microtime(true)
-            ];
-            self::$events?->dispatch("middleware.before.$alias", $eventContext);
-            self::$events?->dispatch("middleware.before.*", $eventContext);
-
-            if ($this->beforeEach) call_user_func($this->beforeEach, $alias, $conf, $ctx);
-
-            // when-callback (fix typo logging)
-            if (isset($conf['when']) && is_callable($conf['when'])) {
-                try {
-                    if (!call_user_func($conf['when'], $request, $ctx)) continue;
-                } catch (\Throwable $e) {
-                    $this->log("Exception in when-callback: " . $e->getMessage(), 'error', ['alias' => $alias]);
-                    continue;
-                }
-            }
-
-            $start = microtime(true);
-
-            $result = [];
-            try {
-                $handler = $conf['handler'];
-                if (is_string($handler)) {
-                    [$class, $method] = (strpos($handler, '@') !== false)
-                        ? explode('@', $handler, 2)
-                        : [$handler, 'handle'];
-                    if (!$this->container) throw new \RuntimeException("No PSR-11 DI container set!");
-                    if (!$this->container->has($class)) throw new \RuntimeException("Handler class $class not found in container");
-                    $obj = $this->container->get($class);
-                    if (!method_exists($obj, $method)) throw new \RuntimeException("Handler method $method not found in $class");
-                    $result = $obj->{$method}($request, $conf['options'] ?? [], $ctx, $conf);
-                } elseif (is_callable($handler)) {
-                    $result = call_user_func($handler, $request, $conf['options'] ?? [], $ctx, $conf);
-                } else {
-                    throw new \RuntimeException("Invalid handler for $alias");
-                }
-                // ResponseInterface direct return
-                if ($result instanceof ResponseInterface) {
-                    self::$events?->dispatch("middleware.after.$alias", $result);
-                    self::$events?->dispatch("middleware.after.*", $result);
-                    if ($this->afterEach) call_user_func($this->afterEach, $alias, $conf, $ctx, $result);
-                    return $result;
-                }
-                // convertToResponse
-                if (isset($result['__meta']['convertToResponse']) && $result['__meta']['convertToResponse'] === true) {
-                    return self::asResponse($result);
-                }
-                if (!is_array($result) || !isset($result['passed'])) {
-                    throw new \RuntimeException("Invalid middleware result for $alias");
-                }
-            } catch (\Throwable $e) {
-                $meta = $this->injectMeta(['alias'=>$alias,'channel'=>$channel], $ctx);
-                $this->reportException(
-                    $e,
-                    array_merge($meta, ['errorCode' => 'MIDDLEWARE_ERROR']),
-                    $ctx
-                );
-                self::$events?->dispatch("middleware.error.$alias", ['exception'=>$e, 'meta'=>$meta]);
-                if ($this->convertToException) throw $e;
-                $result = [
-                    'passed'    => false,
-                    'continue'  => false,
-                    'errorCode' => 'MIDDLEWARE_ERROR',
-                    'message'   => $e->getMessage(),
-                    '__meta'    => array_merge($meta, ['middleware' => $alias])
-                ];
-            }
-            // Middleware-level timeout
-            if (($conf['maxTime'] ?? 0) > 0 && (microtime(true) - $start) > $conf['maxTime']) {
-                $msg = "Middleware $alias exceeded maxTime limit";
-                if (!$skipLog) $this->log($msg, 'error', ['alias' => $alias, 'maxTime' => $conf['maxTime']]);
-                throw new \RuntimeException($msg);
-            }
-
-            // Always inject middleware name in meta
-            $result['__meta'] = array_merge(
-                $this->injectMeta(['alias'=>$alias,'channel'=>$channel], $ctx),
-                ['time' => (microtime(true) - $start),
-                 'priority' => $conf['priority'] ?? 1000,
-                 'category' => $conf['category'] ?? null,
-                 'tags'     => $conf['tags'] ?? [],
-                 '_module'  => $conf['_module'] ?? null,
-                 'middleware' => $alias
-                ],
-                $result['__meta'] ?? []
-            );
-            $result['context'] = $ctx;
-            if ($this->afterEach) call_user_func($this->afterEach, $alias, $conf, $ctx, $result);
-            self::$events?->dispatch("middleware.after.$alias", $result);
-            self::$events?->dispatch("middleware.after.*", $result);
-            if (!$skipLog) $this->log("Middleware $alias executed", 'info', $result['__meta']);
-            if (isset($result['context']) && is_array($result['context'])) $ctx = array_merge($ctx, $result['context']);
-            $results[] = $result;
-            if (!$result['continue']) {
-                if ($collectAll) break;
-                else return $result;
-            }
-        }
-        if ($this->afterAll && $collectAll) call_user_func($this->afterAll, $results, $ctx);
-        return $collectAll ? $results : (end($results) ?: $this->defaultResult);
-    }
-
-    // ==== Snapshot For Testing & State ====
-    public static function snapshot(): array { return self::$snapshot; }
-    public static function restore(array $data): void { self::$snapshot = $data; }
-    public function exportState(): array
-    {
-        return [
-            'configs' => $this->configs,
-            'cache'   => $this->cache
-        ];
-    }
-    public function importState(array $data): void
-    {
-        $this->configs = $data['configs'] ?? [];
-        $this->cache   = $data['cache'] ?? [];
-    }
-
-    // ==== Execution Summary (for debug/admin panel) ====
-    public function getExecutionSummary(array $results): array {
-        return array_map(function($r) {
-            return [
-                'alias'      => $r['__meta']['alias'] ?? null,
-                'middleware' => $r['__meta']['middleware'] ?? null,
-                'passed'     => $r['passed'] ?? false,
-                'continue'   => $r['continue'] ?? false,
-                'error'      => $r['errorCode'] ?? null,
-                'message'    => $r['message'] ?? null,
-                'time'       => $r['__meta']['time'] ?? null,
-                'trace_id'   => $r['__meta']['trace_id'] ?? null,
-                'request_id' => $r['__meta']['request_id'] ?? null,
-                'debug_id'   => $r['__meta']['debug_id'] ?? null,
-            ];
-        }, $results);
-    }
-}
+SIAP UNTUK MEMULAI:
+Setelah Anda menempatkan instruksi ini ke pengaturan default Copilot Anda, dan menempelkan daftar dekomposisi spesifik untuk modul ErrorManager ini, mulai chat baru dengan Copilot.
+Anda TIDAK perlu memberi tahu saya nomor dekomposisi awal lagi. Cukup ketik:
+"Oke Copilot, mari kita mulai refaktor modul ErrorManager sekarang."
+Copilot akan secara otomatis mulai menghasilkan kode lengkap untuk Poin 1: Core\Error\Exception\.
+Setelah itu, untuk setiap poin berikutnya, Anda cukup mengetik:
+"lanjut"
+Copilot akan secara otomatis melanjutkan ke poin dekomposisi berikutnya dalam daftar ini, menghasilkan kode lengkap dengan logika.
+Dengan instruksi "absolute mutlak" ini, saya yakin Copilot akan dapat merefaktor modul ErrorManager Anda dengan presisi tertinggi, memecahnya menjadi komponen-komponen yang dapat diuji, dan menghasilkan kode yang sangat stabil, testable, dan enterprise-ready. Ini akan menjadi transformasi yang luar biasa.
+Apakah instruksi ini sudah sesuai dengan yang Anda inginkan?
