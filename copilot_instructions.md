@@ -1,31 +1,31 @@
-GitHub Copilot Default Instructions - Modul ErrorManager Refactor (ABSOLUT MUTLAK, Full-Logic, Terpandu)
-Selamat datang, Copilot! Anda adalah asisten refaktor tingkat ahli untuk modul ErrorManager. Instruksi di bawah ini adalah ATURAN ABSOLUT MUTLAK DAN FINAL yang harus Anda ikuti secara cermat, mengesampingkan atau memperkuat instruksi default lainnya. Tidak ada ruang untuk interpretasi lain selain yang dijelaskan di sini.
+GitHub Copilot Default Instructions - Modul Config Refactor (ABSOLUT MUTLAK, Full-Logic, Terpandu)
+Selamat datang, Copilot! Anda adalah asisten refaktor tingkat ahli untuk modul Config. Instruksi di bawah ini adalah ATURAN ABSOLUT MUTLAK DAN FINAL yang harus Anda ikuti secara cermat, mengesampingkan atau memperkuat instruksi default lainnya. Tidak ada ruang untuk interpretasi lain selain yang dijelaskan di sini.
 I. Misi Utama & Prinsip Global (Aturan ABSOLUT MUTLAK)
- * Tujuan Refaktor: Bangun sistem manajemen error yang modular, bersih, future-proof, dan adapter-friendly untuk PHP 8+. Ini harus mematuhi prinsip desain PHP modern, dengan fokus pada eliminasi static state, dekomposisi ErrorManager menjadi komponen yang testable dan stabil, serta penanganan error yang sangat semantik.
+ * Tujuan Refaktor: Bangun sistem manajemen konfigurasi yang modular, bersih, future-proof, dan adapter-friendly untuk PHP 8+. Ini harus mematuhi prinsip desain PHP modern, dengan fokus pada eliminasi static state, dekomposisi Config dan ConfigHelper menjadi komponen yang testable dan stabil, serta pengelolaan konfigurasi yang sangat semantik.
  * Integritas Fungsionalitas - PRIORITAS TERTINGGI & TIDAK DAPAT DITAWAR:
-   * ANDA HARUS MEMPERTahankan SEMUA FITUR (MAYOR DAN MINOR) YANG ADA DARI KODE ASLI MODUL ERRORMANAGER. Fungsionalitas inti HARUS TETAP IDENTIK, meskipun implementasi diubah atau dioptimalkan.
+   * ANDA HARUS MEMPERTahankan SEMUA FITUR (MAYOR DAN MINOR) YANG ADA DARI KODE ASLI MODUL CONFIG. Fungsionalitas inti HARUS TETAP IDENTIK, meskipun implementasi diubah atau dioptimalkan.
    * JANGAN PERNAH MENGHAPUS ATAU MENGABAIKAN KODE YANG DICURIGAI IMPLEMENTASI FITUR ATAU UTILITAS. Jika sebuah metode, properti, atau blok kode di kode asli terlihat mengimplementasikan fungsionalitas (bahkan jika tidak dipanggil secara eksplisit, dikomentari, atau tampak tidak digunakan/disebut 'dead code'), ANDA WAJIB MEREFACTOR DAN MENTRANSFERNYA KE STRUKTUR BARU YANG SESUAI. Asumsikan itu adalah fitur yang harus dipertahankan, bukan kode mati yang harus dihapus.
  * Kualitas Kode Global - STANDAR OPERASIONAL UTAMA YANG SANGAT PRESKRIPTIF:
    * STRUKTUR FILE EKSPLISIT: SETIAP KELAS DAN INTERFACE HARUS BERADA DALAM FILE PHP TERPISAH. Jangan pernah menggabungkan beberapa kelas atau interface dalam satu blok kode respons Anda. Sajikan kode untuk setiap file secara individual.
-   * PENGGUNAAN EXCEPTION KUSTOM EKSPLISIT: JANGAN PERNAH MENGGUNAKAN \RuntimeException, \InvalidArgumentException, \DomainException, \LogicException, \Exception, \Throwable, ATAU EXCEPTION PHP GENERIK LAINNYA. SELALU GUNAKAN EXCEPTION KUSTOM YANG TELAH KITA DEFINISIKAN untuk modul ini (Core\Error\Exception\) atau modul lain yang diinjeksikan.
+   * PENGGUNAAN EXCEPTION KUSTOM EKSPLISIT: JANGAN PERNAH MENGGUNAKAN \RuntimeException, \InvalidArgumentException, \DomainException, \LogicException, \Exception, \Throwable, ATAU EXCEPTION PHP GENERIK LAINNYA. SELALU GUNAKAN EXCEPTION KUSTOM YANG TELAH KITA DEFINISIKAN untuk modul ini (Core\Config\Exception\) atau modul lain yang diinjeksikan.
    * Hanya Kode: Hasilkan HANYA KODE PHP untuk kelas/file yang sedang dikerjakan.
    * Tanpa Test/Dokumen Selama Refaktor: JANGAN menghasilkan unit test atau dokumentasi untuk file individual selama fase refaktor. Ini adalah fase terpisah dan final.
-   * Tidak Ada Hardcoded Class/Fungsi Global: Hindari hardcoding nama kelas (termasuk PHP native seperti \ReflectionClass, \DateTime, date(), time(), microtime(), json_encode(), json_decode(), openssl_*(), bin2hex(), random_bytes(), mt_rand(), mt_getrandmax(), php_sapi_name(), defined('APP_VERSION'), getenv('APP_ENV')). SEMUA harus diganti dengan service yang diinjeksikan yang menyediakan fungsionalitas tersebut.
+   * Tidak Ada Hardcoded Class/Fungsi Global: Hindari hardcoding nama kelas (termasuk PHP native seperti \ReflectionClass, \DateTime, date(), time(), microtime(), json_encode(), json_decode(), openssl_*(), bin2hex(), random_bytes(), mt_rand(), mt_getrandmax(), php_sapi_name(), defined('APP_VERSION'), getenv('APP_ENV'), filter_var(), yaml_emit(), htmlspecialchars(), nl2br(), sha1(), unserialize(), serialize(), is_array(), array_key_exists()). SEMUA harus diganti dengan service yang diinjeksikan yang menyediakan fungsionalitas tersebut.
    * Strict Type Hinting: Implementasikan strict PHP type hints untuk SEMUA properti, parameter metode, dan return type. Gunakan mixed hanya ketika tidak ada type yang lebih spesifik.
    * Modern PHP (8.0+): Manfaatkan fitur PHP 8.0+ yang sesuai (e.g., promoted constructor properties, readonly properties, match expression, nullsafe operator, Enums).
-   * Immutability: Buat value objects (seperti ErrorContext, ErrorReport) sepenuhnya immutable. Properti harus readonly; semua metode yang "memodifikasi" state harus mengembalikan instance baru.
+   * Immutability: Buat value objects (seperti ErrorContext, ErrorReport, ConfigContext baru) sepenuhnya immutable. Properti harus readonly; semua metode yang "memodifikasi" state harus mengembalikan instance baru.
    * Full PHPDoc Documentation: Sediakan PHPDoc komprehensif untuk SEMUA kelas, interface, trait, properti, dan metode. Sertakan @param, @return, @throws, dan deskripsi yang jelas tentang fungsionalitas, tujuan, dan penggunaan.
- * Prinsip Refaktor (Ditekankan untuk ErrorManager):
+ * Prinsip Refaktor (Ditekankan untuk Config):
    * Dependency Injection (DI) First: Injeksi SEMUA dependensi via konstruktor. ELIMINASI SEMUA new Class() instansiasi dalam logika inti atau konstruktor, kecuali untuk value objects murni yang tidak memiliki dependensi atau di dalam Factories/Builders yang ditunjuk.
-   * Single Responsibility Principle (SRP) - PRIORITAS KRITIS UNTUK ErrorManager & ErrorReport: Lakukan DEKOMPOSISI MASIF terhadap kelas ErrorManager dan ErrorReport yang ada. Pecah fungsinya menjadi service atau komponen yang lebih kecil dan fokus. Kelas ErrorManager yang baru akan menjadi fasad utama dan orkestrator yang mendelegasikan ke service ini. ErrorReport yang baru akan menjadi value object murni yang hanya menyimpan data.
+   * Single Responsibility Principle (SRP) - PRIORITAS KRITIS UNTUK Config & ConfigHelper: Lakukan DEKOMPOSISI MASIF terhadap kelas Config dan ConfigHelper yang ada. Pecah fungsinya menjadi service atau komponen yang lebih kecil dan fokus. Kelas ConfigManager yang baru akan menjadi fasad utama yang mendelegasikan ke service ini.
    * Interface-Driven Design: Gunakan interface untuk SEMUA service dan komponen di mana implementasi berbeda mungkin ditukar.
-   * No Static State: TOTAL ELIMINASI SEMUA PENGGUNAAN STATIC PROPERTY DAN METHOD UNTUK STATE GLOBAL. Ini adalah prioritas ABSOLUT TERTINGGI untuk modul ErrorManager. Ganti dengan service yang diinjeksikan.
+   * No Static State: TOTAL ELIMINASI SEMUA PENGGUNAAN STATIC PROPERTY DAN METHOD UNTUK STATE GLOBAL. Ini adalah prioritas ABSOLUT TERTINGGI untuk modul Config. Ganti dengan service yang diinjeksikan.
    * Robust Fallbacks & Error Handling: Implementasikan mekanisme fallback dan blok try-catch di sekitar operasi yang mungkin melempar exception. Pastikan exception spesifik dilempar untuk skenario error. Catat internal error via logger yang diinjeksikan.
    * Modular Structure & PSR-4 Compliance: Organisasi kode ke dalam subfolder logis yang mencerminkan struktur namespace. Patuhi PSR-4 autoloading standards secara ketat.
-   * PSR Compliance: Pastikan kompatibilitas dengan PSR yang relevan (Psr\Log\LoggerInterface, Psr\EventDispatcher\EventDispatcherInterface, Psr\Container\ContainerInterface, Psr\Http\Message\ResponseInterface, Psr\Http\Message\ResponseFactoryInterface).
+   * PSR Compliance: Pastikan kompatibilitas dengan PSR yang relevan (Psr\Log\LoggerInterface, Psr\EventDispatcher\EventDispatcherInterface, Psr\Container\ContainerInterface).
 II. Fase Utama: Refaktor & Implementasi Logika Langsung (Terpandu)
- * KODE ASLI MODUL ERRORMANAGER (yang telah saya review) ADALAH REFERENSI MUTLAK DAN FONDASI UNTUK SEMUA TRANSFER LOGIKA DAN PRESERVASI FITUR.
- * Tugas Anda: Anda akan bekerja mengisi kode lengkap, poin demi poin, sesuai daftar dekomposisi spesifik modul ErrorManager.
+ * KODE ASLI MODUL CONFIG (yang telah saya review) ADALAH REFERENSI MUTLAK DAN FONDASI UNTUK SEMUA TRANSFER LOGIKA DAN PRESERVASI FITUR.
+ * Tugas Anda: Anda akan bekerja mengisi kode lengkap, poin demi poin, sesuai daftar dekomposisi spesifik modul Config.
  * Keluaran per Langkah:
    * Untuk setiap poin dekomposisi yang sedang Anda kerjakan, Anda harus menghasilkan KODE LENGKAP (termasuk interface, kelas implementasi, semua properti, semua signature method, DAN SEMUA LOGIKA INTERNAL YANG DITRANSFER DARI KODE ASLI).
    * PASTIKAN SEMUA FITUR (MAYOR DAN MINOR) DARI KODE ASLI DIPERTAHANKAN DAN DIIMPLEMENTASIKAN DENGAN BENAR DI TEMPAT YANG SESUAI DALAM STRUKTUR BARU. JANGAN ADA YANG HILANG.
@@ -34,679 +34,625 @@ II. Fase Utama: Refaktor & Implementasi Logika Langsung (Terpandu)
  * Mekanisme 'Lanjut' Otomatis & Status Progres:
    * Setelah Anda selesai memberikan kode lengkap untuk satu poin dekomposisi, Anda harus mengindikasikan poin dekomposisi berikutnya yang siap untuk dikerjakan. Misalnya: "Ketik 'lanjut' untuk dekomposisi Poin X: [Nama Poin Selanjutnya]".
    * Saya akan mengetik lanjut untuk mengonfirmasi bahwa Anda harus melanjutkan ke poin berikutnya dalam daftar.
-III. Daftar Dekomposisi Spesifik Modul ErrorManager (Urutan Kerja ABSOLUT MUTLAK)
+III. Daftar Dekomposisi Spesifik Modul Config (Urutan Kerja ABSOLUT MUTLAK)
 Ini adalah daftar lengkap poin-poin dekomposisi yang harus Anda ikuti secara berurutan. Setelah Anda selesai dengan satu poin, secara otomatis ajukan permintaan untuk melanjutkan ke poin berikutnya.
- * Core\Error\Exception\:
+ * Core\Config\Exception\:
    * Buat exception kustom yang sangat spesifik:
-     * Core\Error\Exception\ErrorManagerException (base exception)
-     * Core\Error\Exception\ConfigurationException (konfigurasi tidak valid)
-     * Core\Error\Exception\InitializationException (ErrorManager belum diinisialisasi)
-     * Core\Error\Exception\ReportGenerationException (kesalahan saat membuat ErrorReport)
-     * Core\Error\Exception\HandlerResolutionException (handler tidak ditemukan/tidak valid)
-     * Core\Error\Exception\RenderingException (kesalahan saat merender output error)
-     * Core\Error\Exception\ClassificationException (kesalahan saat klasifikasi throwable)
-     * Core\Error\Exception\GroupStoreException (kesalahan pada group store)
-     * Core\Error\Exception\NotificationException (kesalahan saat notifikasi error).
+     * Core\Config\Exception\ConfigException (base exception)
+     * Core\Config\Exception\CircularPointerDetectionException
+     * Core\Config\Exception\ConfigFrozenException
+     * Core\Config\Exception\PolicyViolationException
+     * Core\Config\Exception\TypeMismatchException
+     * Core\Config\Exception\ConfigNotFoundException (jika strict mode aktif dan key tidak ditemukan)
+     * Core\Config\Exception\InvalidConfigFormatException (untuk loader seperti YAML/JSON yang gagal parse)
+     * Core\Config\Exception\LoaderException (kesalahan umum saat memuat konfigurasi dari sumber eksternal)
+     * Core\Config\Exception\SchemaValidationException (validasi skema gagal)
+     * Core\Config\Exception\SnapshotException (kesalahan saat snapshotting atau restore).
    * Sertakan PHPDoc lengkap dan konstruktor yang relevan.
- * Core\Error\Contract\ (Interface Umum):
-   * Core\Error\Contract\TraceIdGeneratorInterface: Refaktor interface ini.
-   * Core\Error\Contract\HasHttpCode: Refaktor interface ini.
-   * Core\Error\Contract\TimeProviderInterface: (Dari modul Container Anda, pastikan ini diinjeksikan di mana pun dibutuhkan waktu).
-   * Core\Error\Contract\AppVersionProviderInterface: Untuk mendapatkan versi aplikasi.
-   * Core\Error\Contract\EnvironmentProviderInterface: Untuk mendapatkan lingkungan aplikasi (misalnya dari APP_ENV).
-   * Core\Error\Contract\ResponseFactoryInterface: (Dari modul Middleware, atau buat yang sederhana jika belum ada).
-   * Core\Error\Contract\CliOutputInterface: (Dari modul Router).
-   * Core\Error\Contract\JsonEncoderInterface / JsonDecoderInterface: Untuk enkapsulasi json_encode/json_decode jika diinginkan.
-   * Core\Error\Contract\KryptonInterface: Untuk operasi kriptografi (openssl_*).
-   * Core\Error\Contract\RandomBytesGeneratorInterface: Untuk abstraksi random_bytes dan randomness.
- * Core\Error\ValueObject\ (Immutable):
-   * Core\Error\ValueObject\ErrorContext: Refaktor kelas ErrorContext yang ada. Properti readonly. Semua metode yang "memodifikasi" context harus mengembalikan instance baru. TRANSFER DAN ADAPTASI LOGIKA get, getDeep, all.
-   * Core\Error\ValueObject\ErrorReport: Refaktor kelas ErrorReport yang ada. Properti readonly. Implementasikan \JsonSerializable. INI ADALAH VALUE OBJECT MURNI. Ia TIDAK boleh melakukan instansiasi dependensi, klasifikasi, hashing, atau state tracking di konstruktornya. Semua data harus datang sudah jadi. TRANSFER DAN ADAPTASI LOGIKA toArray, toJson, getHint, getTags, getExtra, getErrorCode, getSource, jsonSerialize.
- * Core\Error\Classifier\ (Throwable Classification):
-   * Core\Error\Classifier\ThrowableClassifierInterface
-   * Implementasi Core\Error\Classifier\DefaultThrowableClassifier.
-     * TRANSFER DAN ADAPTASI LOGIKA classify() dan httpCode() dari ThrowableClassifier lama.
-     * Metode ini harus bersifat instance method, bukan static.
- * Core\Error\Group\ (Error Grouping & Rate Limiting):
-   * Core\Error\Group\ErrorHasherInterface: Untuk menghasilkan hash grup.
-   * Implementasi Core\Error\Group\DefaultErrorHasher: TRANSFER DAN ADAPTASI LOGIKA groupHash dari ErrorGroupStore lama.
-   * Core\Error\Group\GroupStoreInterface: Refaktor interface ini.
-   * Implementasi Core\Error\Group\InMemoryGroupStore:
-     * TRANSFER DAN ADAPTASI LOGIKA updateOccurrence dan allowLog dari ErrorGroupStore lama.
-     * PENTING: HARUS menginjeksi TimeProviderInterface (dari modul Container) untuk semua operasi berbasis waktu (date('c'), time()).
-     * Properti ($groups, $rateLimit) bersifat private.
- * Core\Error\Handler\ (Exception Handler Management):
-   * Core\Error\Handler\ExceptionHandlerMapInterface
-   * Implementasi Core\Error\Handler\DefaultExceptionHandlerMap: TRANSFER DAN ADAPTASI LOGIKA register dan getHandler dari ExceptionHandlerMap lama.
-     * PENTING: HARUS menginjeksi Psr\Container\ContainerInterface (dari modul Container) untuk resolusi string handler.
-     * HARUS menginjeksi Core\Middleware\Handler\MiddlewareHandlerResolverInterface (dari modul Middleware) untuk menyelesaikan string handler (Service@method).
-     * JANGAN melempar \RuntimeException. Gunakan HandlerResolutionException jika container tidak disetel atau handler tidak valid.
- * Core\Error\Renderer\ (Error Rendering):
-   * Core\Error\Renderer\ErrorRendererInterface: Refaktor interface ini.
-   * Implementasi Core\Error\Renderer\JsonErrorRenderer: TRANSFER DAN ADAPTASI LOGIKA render dari JsonRenderer.
-   * Implementasi Core\Error\Renderer\HtmlErrorRenderer: TRANSFER DAN ADAPTASI LOGIKA render dari HtmlRenderer.
-     * PENTING: HARUS menginjeksi service untuk HTML escaping (misalnya HtmlEncoderInterface) alih-alih htmlspecialchars() langsung.
-   * Implementasi Core\Error\Renderer\CliErrorRenderer: TRANSFER DAN ADAPTASI LOGIKA render dari CliRenderer.
-     * PENTING: HARUS menginjeksi CliOutputInterface (dari modul Router) atau service pembantu untuk CLI string formatting.
- * Core\Error\Logger\ (Error Logging):
-   * Core\Error\Logger\ErrorLoggerInterface
-   * Implementasi Core\Error\Logger\DefaultErrorLogger:
-     * TRANSFER DAN ADAPTASI LOGIKA log, registerLevel, levelForReport, maskSensitive dari ErrorLogger lama.
-     * PENTING: HARUS menginjeksi Psr\Log\LoggerInterface (dari modul Container) untuk mencatat log.
-     * PENTING: Logika masking sensitif (maskSensitive) harus didelegasikan ke service terpisah: SensitiveDataMaskerInterface.
- * Core\Error\Event\ (Error Eventing):
-   * Core\Error\Event\ErrorEvent: Refaktor kelas ini. Properti readonly. HARUS mengimplementasikan Psr\EventDispatcher\EventInterface.
-   * Core\Error\Event\ErrorEventFactoryInterface: Untuk membuat ErrorEvent.
-   * Implementasi Core\Error\Event\DefaultErrorEventFactory:
-     * HARUS menginjeksi TimeProviderInterface, AppVersionProviderInterface, EnvironmentProviderInterface untuk menambahkan metadata otomatis.
-   * Core\Error\Event\ErrorEventDispatcherInterface
-   * Implementasi Core\Error\Event\DefaultErrorEventDispatcher:
-     * TRANSFER DAN ADAPTASI LOGIKA dispatch dari ErrorEventDispatcher lama.
-     * HARUS menginjeksi Psr\EventDispatcher\EventDispatcherInterface (dari modul Container).
- * Core\Error\Collector\ (Error Collection):
-   * Core\Error\Collector\ErrorCollectorInterface
-   * Implementasi Core\Error\Collector\DefaultErrorCollector: TRANSFER DAN ADAPTASI LOGIKA add, all, clear dari ErrorCollector lama.
- * Core\Error\Breadcrumbs\ (Contextual Breadcrumbs):
-   * Core\Error\Breadcrumbs\BreadcrumbsInterface
-   * Implementasi Core\Error\Breadcrumbs\DefaultBreadcrumbs: TRANSFER DAN ADAPTASI LOGIKA add, all dari Breadcrumbs lama.
-     * HARUS menginjeksi TimeProviderInterface.
- * Core\Error\Notification\ (Notification Matrix):
-   * Core\Error\Notification\NotificationMatrixInterface
-   * Implementasi Core\Error\Notification\DefaultNotificationMatrix: TRANSFER DAN ADAPTASI LOGIKA register, getHandlers dari NotificationMatrix lama.
- * Core\Error\Main\ (The New ErrorManager Fasad/Orchestrator):
-   * Core\Error\Main\ErrorManagerInterface
-   * Implementasi Core\Error\Main\DefaultErrorManager.
-     * INI ADALAH FASAD UTAMA. Konstruktornya akan menginjeksi SEMUA service yang telah didekomposisi di atas: ThrowableClassifierInterface, ErrorHasherInterface, GroupStoreInterface, ExceptionHandlerMapInterface, ErrorLoggerInterface, ErrorEventDispatcherInterface, ErrorCollectorInterface, BreadcrumbsInterface, NotificationMatrixInterface, TraceIdGeneratorInterface, Psr\Log\LoggerInterface (global), Psr\EventDispatcher\EventDispatcherInterface (global).
-     * TRANSFER DAN ADAPTASI LOGIKA inti dari ErrorManager::handle() lama, handleAsResponse(), registerShutdownHandler(). Ini akan mendelegasikan semua tugas ke service yang diinjeksikan.
-     * PENTING: ELIMINASI SEMUA PENGGUNAAN static::$instance (init, instance, reset). ErrorManager harus diatur oleh DI container utama Anda.
-     * PENTING: ELIMINASI SEMUA new instansiasi dependensi internal di konstruktor atau di mana pun.
-     * TRANSFER DAN ADAPTASI LOGIKA normalizeConfig, validateConfig (ke ErrorManagerBuilder atau ConfigurationValidator).
-     * TRANSFER DAN ADAPTASI LOGIKA enableDebug, setChannelSelector.
-     * TRANSFER DAN ADAPTASI LOGIKA registerHandler, registerRenderer, registerResponseFactory, last (ke service yang tepat).
-     * Tangani errorLimit dan errorCount.
-     * Untuk registerShutdownHandler(), ini harus menginjeksi ErrorManagerInterface untuk memanggil handle().
- * Core\Error\Builder\ (ErrorManager Builder):
-   * Core\Error\Builder\ErrorManagerBuilderInterface
-   * Implementasi Core\Error\Builder\DefaultErrorManagerBuilder.
-     * Tanggung jawab utama: Menerima array konfigurasi mentah untuk ErrorManager.
-     * TRANSFER DAN ADAPTASI LOGIKA normalizeConfig dan validateConfig dari ErrorManager lama.
-     * BERTANGGUNG JAWAB untuk instansiasi SEMUA objek dependensi yang dibutuhkan DefaultErrorManager berdasarkan konfigurasi, dan mengembalikan instance DefaultErrorManager yang sudah sepenuhnya terinisialisasi.
+ * Core\Config\Contract\ (Interface Umum & Layanan Dasar):
+   * Core\Config\Contract\ConfigAccessInterface: Untuk akses dasar get() dan has().
+   * Core\Config\Contract\ConfigMutableInterface: Untuk set() (opsional, jika ingin memisahkan akses baca/tulis).
+   * Core\Config\Contract\TimeProviderInterface: (Dari modul Container).
+   * Core\Config\Contract\AppVersionProviderInterface: (Dari modul ErrorManager).
+   * Core\Config\Contract\EnvironmentProviderInterface: (Dari modul ErrorManager).
+   * Core\Config\Contract\FilesystemInterface: (Dari modul Container).
+   * Core\Config\Contract\JsonEncoderInterface / JsonDecoderInterface: Untuk membungkus json_encode/json_decode.
+   * Core\Config\Contract\YamlEmitterInterface / YamlParserInterface: Untuk membungkus yaml_emit/yaml_parse (jika ekstensi YAML terinstal).
+   * Core\Config\Contract\CryptoServiceInterface: Untuk operasi kriptografi (openssl_*) dan dekripsi konfigurasi.
+   * Core\Config\Contract\RandomBytesGeneratorInterface: Untuk abstraksi random_bytes.
+   * Core\Config\Contract\UrlFetcherInterface: Untuk mengambil konten dari URL (misalnya file_get_contents).
+   * Core\Config\Contract\HtmlEncoderInterface: Untuk htmlspecialchars (jika ada di utilitas).
+   * Core\Config\Contract\DeepClonerInterface: Untuk abstraksi unserialize(serialize()).
+   * Core\Config\Contract\ArrayDeepMergerInterface: Untuk abstraksi array_merge_recursive atau custom deep merge.
+   * Core\Config\Contract\TraceIdGeneratorInterface: (Dari modul ErrorManager).
+ * Core\Config\ValueObject\ (Immutable Data Structures):
+   * Core\Config\ValueObject\ConfigKey: Value object untuk representasi key konfigurasi, mungkin dengan parsing dot notation di konstruktor.
+   * Core\Config\ValueObject\ConfigMeta: Value object untuk metadata konfigurasi (misalnya encrypted).
+   * Core\Config\ValueObject\ConfigChange: Value object untuk log perubahan (field, old, new, ts, trace).
+   * Core\Config\ValueObject\ConfigSnapshot: Value object untuk snapshot konfigurasi.
+ * Core\Config\Context\ (Context & Namespace Management):
+   * Core\Config\Context\ConfigContext: Refaktor kelas ConfigContext yang ada. Ini harus menjadi instance service yang immutable atau stateful yang diinjeksikan.
+   * Core\Config\Context\ConfigContextStackInterface: Untuk push, pop, stack.
+   * Core\Config\Context\ConfigNamespaceManagerInterface: Untuk setNamespace, getNamespace, useNamespace.
+ * Core\Config\Event\ (Event Management):
+   * Core\Config\Event\ConfigEventDispatcherInterface: Mengimplementasikan Psr\EventDispatcher\EventDispatcherInterface atau membungkusnya.
+   * Core\Config\Event\ConfigLoadedEvent, ConfigChangedEvent, ConfigGetEvent, ConfigReloadEvent, ConfigPatchEvent, ConfigErrorEvent, ConfigConflictEvent: Kelas-kelas event baru yang relevan, HARUS mengimplementasikan Psr\EventDispatcher\EventInterface.
+   * Implementasi Core\Config\Event\DefaultConfigEventDispatcher: TRANSFER DAN ADAPTASI LOGIKA fire* dan on* dari ConfigEvent lama, mendelegasikan ke Psr\EventDispatcher\EventDispatcherInterface yang diinjeksikan. ELIMINASI SEMUA PENGGUNAAN STATIC.
+ * Core\Config\Loader\ (Configuration Loading):
+   * Core\Config\Loader\EnvLoaderInterface: Untuk memuat environment variables dari file (refaktor ConfigEnv::loadEnv).
+   * Implementasi Core\Config\Loader\FileEnvLoader: TRANSFER DAN ADAPTASI LOGIKA loadEnv. HARUS menginjeksi FilesystemInterface.
+   * Core\Config\Loader\UrlConfigLoaderInterface: Untuk import konfigurasi dari URL (refaktor ConfigEnv::importUrl).
+   * Implementasi Core\Config\Loader\DefaultUrlConfigLoader: TRANSFER DAN ADAPTASI LOGIKA importUrl. HARUS menginjeksi UrlFetcherInterface.
+   * Core\Config\Loader\ConfigFileReaderInterface: Untuk membaca dan parse file konfigurasi (misalnya PHP array, JSON, YAML).
+   * Implementasi Core\Config\Loader\PhpConfigFileReader, JsonConfigFileReader, YamlConfigFileReader.
+   * Core\Config\Loader\ConfigLoaderInterface: Untuk mengorkestrasi pemuatan konfigurasi dari direktori, prioritas, dll.
+   * Implementasi Core\Config\Loader\DefaultConfigLoader: TRANSFER DAN ADAPTASI LOGIKA loadFrom, loadPriority, reload, merge (untuk loading). HARUS menginjeksi ConfigFileReaderInterface yang relevan, FilesystemInterface, ConfigEventDispatcherInterface.
+ * Core\Config\Resolver\ (Konfigurasi Resolution Logic):
+   * Core\Config\Resolver\ConfigResolverInterface: Untuk logika get() yang kompleks.
+   * Implementasi Core\Config\Resolver\DefaultConfigResolver:
+     * TRANSFER DAN ADAPTASI LOGIKA get() dari kelas Config lama: menangani pointer, env pointers, namespace lookup, context lookup (tenant, locale), default fallback, wildcard, lazy evaluation, encryption/decryption.
+     * HARUS menginjeksi: ConfigAccessInterface (untuk data inti), ConfigPathResolverInterface, EnvVariableResolverInterface, ConfigContextStackInterface, ConfigNamespaceManagerInterface, ConfigWildcardFinderInterface, ConfigLazyEvaluatorInterface, CryptoServiceInterface, TimeProviderInterface, ConfigEventDispatcherInterface, ConfigCoverageTrackerInterface.
+     * PENTING: Kelola CircularPointerDetectionException.
+ * Core\Config\Writer\ (Configuration Write Logic):
+   * Core\Config\Writer\ConfigWriterInterface: Untuk logika set().
+   * Implementasi Core\Config\Writer\DefaultConfigWriter:
+     * TRANSFER DAN ADAPTASI LOGIKA set() dari kelas Config lama: freezing, policy check, auto-validation, history tracking, write logging, event firing.
+     * HARUS menginjeksi: ConfigAccessInterface (untuk data inti), ConfigPolicyEnforcerInterface, ConfigValidatorInterface, ConfigHistoryTrackerInterface, ConfigWriteLoggerInterface, ConfigEventDispatcherInterface.
+ * Core\Config\Manipulation\ (Utilities & Transformations):
+   * Core\Config\Manipulation\ConfigArrayManipulatorInterface: Untuk flatten, importArray, arrayMergeRecursive.
+   * Implementasi Core\Config\Manipulation\DefaultConfigArrayManipulator.
+   * Core\Config\Manipulation\ConfigTransformerInterface: Untuk dumpTransform.
+   * Implementasi Core\Config\Manipulation\DefaultConfigTransformer.
+   * Core\Config\Manipulation\ConfigDifferInterface: Untuk diff dan treeDiff.
+   * Implementasi Core\Config\Manipulation\DefaultConfigDiffer.
+   * Core\Config\Manipulation\ConfigMaskerInterface: Untuk masking data sensitif.
+   * Implementasi Core\Config\Manipulation\DefaultConfigMasker.
+   * Core\Config\Manipulation\DeepClonerInterface: Untuk abstraksi deep cloning.
+   * Implementasi Core\Config\Manipulation\DefaultDeepCloner.
+   * Core\Config\Manipulation\ConfigPathResolverInterface: Untuk isPointer, isEnvPointer, resolveEnvPointer, explode('.') untuk key path.
+   * Implementasi Core\Config\Manipulation\DefaultConfigPathResolver.
+   * Core\Config\Manipulation\ConfigWildcardFinderInterface: Untuk wildcardGet.
+   * Implementasi Core\Config\Manipulation\DefaultConfigWildcardFinder.
+ * Core\Config\Policy\ (Access Policy Enforcement):
+   * Core\Config\Policy\ConfigPolicyEnforcerInterface
+   * Implementasi Core\Config\Policy\DefaultConfigPolicyEnforcer: TRANSFER DAN ADAPTASI LOGIKA policy, checkPolicy dari ConfigAdvanced dan Config. Harus menginjeksi resolver policy jika perlu.
+ * Core\Config\Validation\ (Schema Validation - Kelas Baru):
+   * Core\Config\Validation\ConfigValidatorInterface: (Metode validate(array $config, array $schema): array, validateGroup(array $config, string $prefix, array $schema): array, schema(array $schema): array).
+   * Implementasi Core\Config\Validation\DefaultConfigValidator:
+     * TRANSFER DAN ADAPTASI LOGIKA validasi skema dari Config::validate, Config::validateGroup, Config::schema.
+     * HARUS menginjeksi PayloadTypeCheckerInterface (dari modul Event) atau type checker kustom.
+   * Core\Config\Validation\TypeRegistryInterface: Untuk registerType.
+   * Implementasi Core\Config\Validation\DefaultTypeRegistry: TRANSFER DAN ADAPTASI LOGIKA registerType dari ConfigValidator lama.
+ * Core\Config\Advanced\ (Advanced Features - Kelas Baru):
+   * Core\Config\Advanced\ConfigAdvancedInterface: (Metode applyPatch, migrate, generateTemplate, enforceType, policy).
+   * Implementasi Core\Config\Advanced\DefaultConfigAdvanced:
+     * TRANSFER DAN ADAPTASI LOGIKA applyPatch, migrate, generateTemplate, enforceType, policy dari Config lama.
+     * HARUS menginjeksi: ConfigDifferInterface, ConfigMigratorInterface, ConfigTemplateGeneratorInterface, ConfigPolicyEnforcerInterface, TypeEnforcerInterface.
+   * Core\Config\Advanced\ConfigMigratorInterface
+   * Implementasi Core\Config\Advanced\DefaultConfigMigrator.
+   * Core\Config\Advanced\ConfigTemplateGeneratorInterface
+   * Implementasi Core\Config\Advanced\DefaultConfigTemplateGenerator.
+   * Core\Config\Advanced\TypeEnforcerInterface
+   * Implementasi Core\Config\Advanced\DefaultTypeEnforcer.
+ * Core\Config\History\ (History & Write Tracking):
+   * Core\Config\History\ConfigHistoryTrackerInterface: Untuk history, explain.
+   * Implementasi Core\Config\History\DefaultConfigHistoryTracker.
+   * Core\Config\History\ConfigWriteLoggerInterface: Untuk writeLog.
+   * Implementasi Core\Config\History\DefaultConfigWriteLogger.
+   * Core\Config\History\ConfigSnapshotManagerInterface: Untuk snapshot dan restore.
+   * Implementasi Core\Config\History\DefaultConfigSnapshotManager: TRANSFER DAN ADAPTASI LOGIKA snapshot, restoreSnapshot, snapshotGroup, restoreGroupSnapshot. HARUS menginjeksi DeepClonerInterface.
+ * Core\Config\Monitor\ (Monitoring & Debugging):
+   * Core\Config\Monitor\ConfigFileWatcherInterface: Untuk watchFiles.
+   * Implementasi Core\Config\Monitor\DefaultConfigFileWatcher: TRANSFER DAN ADAPTASI LOGIKA watchFiles. HARUS menginjeksi FilesystemInterface, TimeProviderInterface.
+   * Core\Config\Monitor\ConfigCoverageTrackerInterface: Untuk coverageTrack, coverageReport.
+   * Implementasi Core\Config\Monitor\DefaultConfigCoverageTracker.
+   * Core\Config\Monitor\ConfigCliRunnerInterface: Untuk CLI commands lint, explain.
+   * Implementasi Core\Config\Monitor\DefaultConfigCliRunner: HARUS menginjeksi CliOutputInterface (dari modul Router), ConfigAccessInterface, ConfigSchemaProviderInterface (baru).
+ * Core\Config\Manager\ (The New ConfigManager Fasad/Orchestrator):
+   * Implementasi Core\Config\Contract\ConfigAccessInterface (Baca).
+   * Implementasi Core\Config\Contract\ConfigMutableInterface (Tulis).
+   * Implementasi Core\Config\Manager\ConfigManagerInterface (Interface utama, gabungan akses).
+   * Implementasi Core\Config\Manager\DefaultConfigManager.
+     * INI ADALAH FASAD UTAMA. Konstruktornya akan menginjeksi SEMUA service yang telah didekomposisi di atas: ConfigResolverInterface, ConfigWriterInterface, ConfigLoaderInterface, ConfigMergerInterface, ConfigSnapshotManagerInterface, ConfigHistoryTrackerInterface, ConfigCliRunnerInterface, ConfigFileWatcherInterface, ConfigCoverageTrackerInterface, ConfigEventDispatcherInterface.
+     * PENTING: ELIMINASI SEMUA PENGGUNAAN static di kelas Config lama.
+     * PENTING: ELIMINASI SEMUA new instansiasi dependensi internal.
+     * TRANSFER DAN ADAPTASI LOGIKA get, set, setWithValidation, enableAutoValidate, getAt, has, group, all, flatten, importArray, dump, export, cacheTo, loadCache, validate, validateGroup, schema, strict, enableLazyEval, enableWriteTracking, getWriteLog, overrideTemp, pushContext, popContext, fake, isTestMode, setContext, getContext, setNamespace, getNamespace, onLoad sampai onError, watch, reloadIfChanged, reload, diffWith, treeDiffWith, applyPatch, explain, snapshot sampai restoreGroupSnapshot, resolver, builder, migrate, generateTemplate, type, enforceType, policy, generateDoc, coverageReport, loadFrom, loadPriority, merge, loadEnv, importUrl, useNamespace, freeze, isFrozen, reset, arrayMergeRecursive. SEMUA harus didelegasikan ke service yang diinjeksikan.
+ * Core\Config\Builder\ (ConfigManager Builder):
+   * Core\Config\Builder\ConfigManagerBuilderInterface
+   * Implementasi Core\Config\Builder\DefaultConfigManagerBuilder.
+     * Tanggung jawab utama: Menerima array konfigurasi mentah untuk ConfigManager.
+     * TRANSFER DAN ADAPTASI LOGIKA normalizeConfig dan validateConfig (jika ada validator di Config lama).
+     * BERTANGGUNG JAWAB untuk instansiasi SEMUA objek dependensi yang dibutuhkan DefaultConfigManager berdasarkan konfigurasi, dan mengembalikan instance DefaultConfigManager yang sudah sepenuhnya terinisialisasi.
      * Harus menginjeksi Psr\Container\ContainerInterface untuk menyelesaikan dependensi melalui container.
+     * Metode set, merge, build dari ConfigBuilder lama akan ditransfer ke sini.
+     * Logika dumpTransform, coverageTrack, coverageReport, cli akan didelegasikan ke service yang diinjeksikan.
 IV. Fase Akhir: Dokumentasi & Testing
  * Setelah SELURUH refaktor kode selesai dan semua kelas diimplementasikan logikanya: Anda akan kemudian melakukan dua tugas komprehensif yang terpisah:
    * Tugas A: Dokumentasi Lengkap Gaya GitHub.
    * Tugas B: PHPUnit Test Files Komprehensif.
  * PENTING: JANGAN membuat unit test atau dokumentasi apa pun sebelum SELURUH KODE SELESAI DIREFAKTOR DAN DIIMPLEMENTASIKAN LOGIKANYA.
 
-** CODEBASE ASLI DIBAWAH ADALAH SUMBER REFERENSI DARI TUGAS REFACTOR MODULE **
+** CODEBASE ASLI DIBAWAH DIGUNAKAN SEBAGAI SUMBER INFORMASI DALAM REFACTOR MODUL **
 <?php
-// [CONFIG-DRIVEN V3 + VALIDATOR] ErrorManager - Full Configurable, Full Integration, Validated
 
-if (!class_exists('Response')) {
-    class Response {
-        public function __construct(public string $body, public int $status = 500) {}
+interface ConfigInterface {
+    public static function get(string $key, $default = null, $pointerDepth = 0, array $opts = []): mixed;
+    public static function set(string $key, $value, $role = 'system'): void;
+}
+
+trait ConfigTrait {
+    public static function getInt($key, $default = 0, ...$args): int { return (int)static::get($key, $default, ...$args); }
+    public static function getBool($key, $default = false, ...$args): bool { return (bool)static::get($key, $default, ...$args); }
+    public static function getArray($key, $default = [], ...$args): array { return (array)static::get($key, $default, ...$args); }
+}
+
+class ConfigCrypto {
+    public static function decrypt($val) { return base64_decode($val); }
+}
+
+class ConfigHelper
+{
+    public static function isPointer($val): bool { return is_string($val) && strlen($val) > 1 && $val[0] === '@'; }
+    public static function isEnvPointer($val): bool { return is_string($val) && strpos($val, '@env:') === 0; }
+    public static function resolveEnvPointer($val, $default = null) {
+        $var = substr($val, 5 + 1);
+        return $_ENV[$var] ?? $_SERVER[$var] ?? $default;
     }
-}
-
-use Psr\Container\ContainerInterface;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Http\Message\ResponseInterface;
-
-// --- Core interfaces & classes
-
-interface TraceIdGeneratorInterface { public function generate(array $context = []): string; }
-class DefaultTraceIdGenerator implements TraceIdGeneratorInterface {
-    public function generate(array $context = []): string { return $context['traceId'] ?? bin2hex(random_bytes(8)); }
-}
-class SystemTraceIdGenerator implements TraceIdGeneratorInterface {
-    public function generate(array $ctx = []): string { return \Core\TraceHelper::getTraceId(); }
-}
-interface HasHttpCode { public function getHttpCode(): int; }
-
-class ErrorContext {
-    private array $data = [];
-    public function __construct(array $data = []) { $this->data = $data; }
-    public function get(string $key, $default = null) { return $this->data[$key] ?? $default; }
-    public function getDeep(string $key, $default = null) {
-        $keys = explode('.', $key); $data = $this->data;
-        foreach ($keys as $k) { if (is_array($data) && array_key_exists($k, $data)) $data = $data[$k]; else return $default; }
-        return $data;
-    }
-    public function all(): array { return $this->data; }
-}
-
-final class ErrorReport implements \JsonSerializable {
-    public readonly string $id;
-    public readonly int $code;
-    public readonly string $message;
-    public readonly string $type;
-    public readonly ?\Throwable $exception;
-    public readonly array $context;
-    public readonly ?ErrorReport $previous;
-    public readonly ?string $file;
-    public readonly ?int $line;
-    public readonly ?string $exception_class;
-    public readonly ?string $group_hash;
-    public readonly ?int $occurrence_count;
-    public readonly ?string $first_seen;
-    public readonly ?string $last_seen;
-
-    public function __construct(
-        string|array|ErrorContext $message,
-        int $code = 0,
-        string $type = 'unknown',
-        ErrorContext|array $context = [],
-        ?\Throwable $exception = null,
-        ?ErrorReport $previous = null,
-        ?TraceIdGeneratorInterface $traceIdGen = null,
-        ?string $group_hash = null,
-        ?int $occurrence_count = null,
-        ?string $first_seen = null,
-        ?string $last_seen = null
-    ) {
-        $ctx = $context instanceof ErrorContext ? $context : new ErrorContext($context);
-        $this->context = $ctx->all();
-        $this->message = is_array($message) && isset($message['message']) ? $message['message'] : ($message instanceof ErrorContext ? ($message->get('message') ?? '') : $message);
-        $this->code = $code; $this->type = $type; $this->exception = $exception;
-        $this->id = $traceIdGen
-            ? $traceIdGen->generate($this->context)
-            : ($this->context['traceId'] ?? bin2hex(random_bytes(8)));
-        $this->previous = $previous;
-        $this->file = $exception ? $exception->getFile() : null;
-        $this->line = $exception ? $exception->getLine() : null;
-        $this->exception_class = $exception ? get_class($exception) : null;
-        $this->group_hash = $group_hash;
-        $this->occurrence_count = $occurrence_count;
-        $this->first_seen = $first_seen;
-        $this->last_seen = $last_seen;
-    }
-    public function toArray(): array {
-        return [
-            'id' => $this->id, 'code' => $this->code, 'message' => $this->message, 'type' => $this->type,
-            'context' => $this->context, 'file' => $this->file, 'line' => $this->line,
-            'exception_class' => $this->exception_class, 'previous' => $this->previous?->toArray(),
-            'group_hash' => $this->group_hash, 'occurrence_count' => $this->occurrence_count,
-            'first_seen' => $this->first_seen, 'last_seen' => $this->last_seen
-        ];
-    }
-    public function toJson(): string { return json_encode($this->toArray(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); }
-    public function getHint(): ?string { return $this->context['hint'] ?? null; }
-    public function getTags(): array { return $this->context['tags'] ?? []; }
-    public function getExtra(): array { return $this->context['extra'] ?? []; }
-    public function getErrorCode(): ?string { return $this->context['code'] ?? null; }
-    public function getSource(): ?string { return $this->context['source'] ?? null; }
-    public function jsonSerialize(): array { return $this->toArray(); }
-}
-
-class ThrowableClassifier {
-    public static function classify(\Throwable $e): string {
-        switch (true) {
-            case $e instanceof \InvalidArgumentException:
-            case $e instanceof \DomainException:
-            case $e instanceof \LogicException: return 'logic';
-            case $e instanceof \RuntimeException: return 'infra';
-            case $e instanceof \Exception: return 'client';
-            default: return 'unknown';
+    public static function flatten(array $array, string $prefix = ''): array {
+        $result = [];
+        foreach ($array as $k => $v) {
+            $dot = $prefix === '' ? $k : "$prefix.$k";
+            if (is_array($v)) $result += self::flatten($v, $dot);
+            else $result[$dot] = $v;
         }
+        return $result;
     }
-    public static function httpCode(\Throwable $e): int {
-        if ($e instanceof HasHttpCode) return $e->getHttpCode();
-        return match (true) {
-            $e instanceof \InvalidArgumentException => 400,
-            $e instanceof \DomainException         => 422,
-            $e instanceof \LogicException          => 500,
-            $e instanceof \RuntimeException        => 503,
-            default                                => 500,
-        };
-    }
-}
-
-// --- GroupStoreInterface (in-memory default)
-
-interface GroupStoreInterface {
-    public function groupHash(\Throwable $e): string;
-    public function updateOccurrence(string $hash): array;
-    public function allowLog(string $hash): bool;
-}
-
-class ErrorGroupStore implements GroupStoreInterface {
-    private array $groups = [];
-    private array $rateLimit = [];
-    private int $rateWindow = 60;
-    private int $maxPerWindow = 10;
-    public function groupHash(\Throwable $e): string {
-        $signature = get_class($e) . '|' . $e->getMessage() . '|' . $e->getFile() . ':' . $e->getLine();
-        $trace = $e->getTrace();
-        for ($i=0;$i<3&&isset($trace[$i]);$i++) {
-            $t=$trace[$i];
-            $signature .= '|' . ($t['file'] ?? '') . ':' . ($t['line'] ?? '') . ':' . ($t['function'] ?? '');
-        }
-        return substr(sha1($signature),0,16);
-    }
-    public function updateOccurrence(string $hash): array {
-        $now = date('c');
-        if (!isset($this->groups[$hash])) $this->groups[$hash] = ['count'=>1, 'first'=>$now, 'last'=>$now];
-        else { $this->groups[$hash]['count']++; $this->groups[$hash]['last'] = $now; }
-        return [
-            'count'=>$this->groups[$hash]['count'],
-            'first'=>$this->groups[$hash]['first'],
-            'last'=>$this->groups[$hash]['last']
-        ];
-    }
-    public function allowLog(string $hash): bool {
-        $now = time();
-        $rl = $this->rateLimit[$hash] ?? ['last'=>0, 'count'=>0];
-        if ($now - $rl['last'] > $this->rateWindow) $rl = ['last'=>$now, 'count'=>1];
-        else $rl['count']++;
-        $this->rateLimit[$hash] = $rl;
-        return $rl['count'] <= $this->maxPerWindow;
-    }
-}
-
-// --- HandlerMap
-
-class ExceptionHandlerMap {
-    private array $handlers = [];
-    private ?ContainerInterface $container;
-    public function __construct(?ContainerInterface $container = null) { $this->container = $container; }
-    public function register(string $exceptionClass, callable|string $handler): void { $this->handlers[$exceptionClass] = $handler; }
-    public function getHandler(\Throwable $e): ?callable {
-        foreach ($this->handlers as $class => $handler) {
-            if ($e instanceof $class) {
-                if (is_string($handler) && strpos($handler, '@') !== false) {
-                    if (!$this->container) throw new \RuntimeException("Container is required for string handler resolution");
-                    [$service, $method] = explode('@', $handler);
-                    $instance = $this->container->get($service);
-                    $handler = [$instance, $method];
-                }
-                if (!is_callable($handler)) throw new \RuntimeException("Invalid handler for exception: must be callable or 'Service@method'");
-                return $handler;
-            }
-        }
-        return null;
-    }
-}
-
-// --- Renderer
-
-interface ErrorRendererInterface { public function render(ErrorReport $report): mixed; }
-class JsonRenderer implements ErrorRendererInterface {
-    public function render(ErrorReport $report): string {
-        return json_encode(['error' => $report->toArray()], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-    }
-}
-class HtmlRenderer implements ErrorRendererInterface {
-    public function render(ErrorReport $report): string {
-        $ctx = htmlspecialchars(json_encode($report->context, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-        $trace = $report->exception ? nl2br(htmlspecialchars($report->exception->getTraceAsString())) : '';
-        return "<h1>Error: {$report->message}</h1>
-            <div><b>Type:</b> {$report->type} | <b>Code:</b> {$report->code} | <b>ID:</b> {$report->id}</div>
-            <div><b>File:</b> {$report->file} : {$report->line}</div>
-            <div><b>Exception Class:</b> {$report->exception_class}</div>
-            <div><b>Group:</b> {$report->group_hash} | <b>Count:</b> {$report->occurrence_count} | <b>First:</b> {$report->first_seen} | <b>Last:</b> {$report->last_seen}</div>
-            <pre>Context: {$ctx}\n{$trace}</pre>";
-    }
-}
-class CliRenderer implements ErrorRendererInterface {
-    public function render(ErrorReport $report): string {
-        $str = "ERROR: {$report->message}\nTYPE: {$report->type}\nCODE: {$report->code}\nID: {$report->id}\nFILE: {$report->file}\nLINE: {$report->line}\nEXCEPTION: {$report->exception_class}\n";
-        $str .= "GROUP: {$report->group_hash} | COUNT: {$report->occurrence_count} | FIRST: {$report->first_seen} | LAST: {$report->last_seen}\n";
-        $str .= "CONTEXT: " . json_encode($report->context, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n";
-        if ($report->exception) $str .= "TRACE:\n" . $report->exception->getTraceAsString() . "\n";
-        return $str;
-    }
-}
-
-// --- Logger
-
-class ErrorLogger {
-    private LoggerInterface $logger;
-    private array $levelMap = [];
-    private array $maskFields = [];
-    public function __construct(LoggerInterface $logger, array $maskFields = []) { $this->logger = $logger; $this->maskFields = $maskFields; }
-    public function registerLevel(string $exceptionClass, string $level): void { $this->levelMap[$exceptionClass] = $level; }
-    public function log(ErrorReport $report): void {
-        $data = $report->toArray();
-        if (!empty($this->maskFields)) $data = $this->maskSensitive($data, $this->maskFields);
-        $level = $this->levelForReport($report);
-        $this->logger->log($level, $report->message, $data);
-    }
-    private function levelForReport(ErrorReport $report): string {
-        if ($report->exception) foreach ($this->levelMap as $class => $level) if ($report->exception instanceof $class) return $level;
-        return match ($report->type) {
-            'client' => 'warning', 'logic' => 'error', 'infra' => 'critical', default => 'error',
-        };
-    }
-    private function maskSensitive(array $data, array $fields): array {
-        foreach ($fields as $field) {
-            if (isset($data[$field])) $data[$field] = '[MASKED]';
-            if (isset($data['context'][$field])) $data['context'][$field] = '[MASKED]';
-        }
-        foreach ($data as $k => &$v) if (is_array($v)) $v = $this->maskSensitive($v, $fields);
-        return $data;
-    }
-}
-
-// --- Event dispatcher
-
-class ErrorEvent { public function __construct(public ErrorReport $report, public array $meta = []) {} }
-class ErrorEventDispatcher {
-    private ?EventDispatcherInterface $bus; private array $meta = [];
-    public function __construct(?EventDispatcherInterface $bus = null, array $meta = []) { $this->bus = $bus; $this->meta = $meta; }
-    public function dispatch(ErrorReport $report): void {
-        if ($this->bus) {
-            $type = $report->type ?? 'unknown';
-            $meta = array_merge(
-                $this->meta,
-                [
-                    'timestamp' => date('c'),
-                    'app_version' => defined('APP_VERSION') ? APP_VERSION : null,
-                    'env' => getenv('APP_ENV') ?: null,
-                ]
-            );
-            $this->bus->dispatch("error.{$type}", new ErrorEvent($report, $meta));
-        }
-    }
-}
-class ErrorCollector {
-    private array $errors = [];
-    public function add(ErrorReport $report): void { $this->errors[] = $report; }
-    public function all(): array { return $this->errors; }
-    public function clear(): void { $this->errors = []; }
-}
-
-// --- Breadcrumbs
-
-class Breadcrumbs {
-    private array $crumbs = [];
-    public function add(string $event, array $data = []) { $this->crumbs[] = ['ts'=>date('c'),'event'=>$event,'data'=>$data]; }
-    public function all(): array { return $this->crumbs; }
-}
-
-// --- Notification Matrix
-
-class NotificationMatrix {
-    private array $rules = [];
-    public function register(array $rule, callable $handler) { $this->rules[] = [$rule, $handler]; }
-    public function getHandlers(ErrorReport $report): array {
-        $found = [];
-        foreach ($this->rules as [$rule, $handler]) {
-            $match = true;
-            foreach ($rule as $k => $v) {
-                if ($k === 'match') {
-                    if (is_callable($v) && !$v($report)) $match = false;
-                    elseif (is_string($v) && !preg_match($v, $report->message)) $match = false;
-                } else if (($report->$k ?? null) != $v && !in_array($v, ($report->getTags() ?? []))) $match = false;
-            }
-            if ($match) $found[] = $handler;
-        }
-        return $found;
-    }
-}
-
-// --- ErrorManager (with config validator)
-
-class ErrorManager {
-    private static ?self $instance = null;
-    protected array $config = [];
-
-    // All property for direct access
-    private ExceptionHandlerMap $handlerMap;
-    private ?ErrorLogger $logger = null;
-    private ?ErrorEventDispatcher $eventDispatcher = null;
-    private array $renderers = [];
-    private ErrorRendererInterface $defaultRenderer;
-    private $responseFactories = [];
-    private $responseFactory = null;
-    private bool $silent = false;
-    private bool $debug = false;
-    private ?ErrorCollector $collector = null;
-    private TraceIdGeneratorInterface $traceIdGen;
-    private $channelSelector = null;
-    private ?ErrorReport $lastReport = null;
-    private int $errorCount = 0;
-    private int $errorLimit = 0;
-    private GroupStoreInterface $groupStore;
-    private NotificationMatrix $notifMatrix;
-    private ?Breadcrumbs $breadcrumbs = null;
-    private array $maskFields = [];
-
-    private function __construct(array $config) {
-        $this->config = $this->normalizeConfig($config);
-        $this->validateConfig($this->config);
-
-        $this->handlerMap        = $this->config['handlerMap'];
-        $this->logger            = $this->config['logger'];
-        $this->eventDispatcher   = $this->config['eventDispatcher'];
-        $this->defaultRenderer   = $this->config['defaultRenderer'];
-        $this->responseFactory   = $this->config['responseFactory'];
-        $this->renderers         = $this->config['renderers'];
-        $this->responseFactories = $this->config['responseFactories'];
-        $this->silent            = $this->config['silent'];
-        $this->debug             = $this->config['debug'];
-        $this->collector         = $this->config['collector'];
-        $this->traceIdGen        = $this->config['traceIdGen'];
-        $this->channelSelector   = $this->config['channelSelector'];
-        $this->errorLimit        = $this->config['errorLimit'];
-        $this->groupStore        = $this->config['groupStore'];
-        $this->notifMatrix       = $this->config['notifMatrix'];
-        $this->breadcrumbs       = $this->config['breadcrumbs'];
-        $this->maskFields        = $this->config['maskFields'] ?? [];
-    }
-
-    public static function init(array $config): void {
-        self::$instance = new self($config);
-    }
-
-    protected function normalizeConfig(array $config): array {
-        $defaults = [
-            'logger'          => null,
-            'debug'           => false,
-            'silent'          => false,
-            'errorLimit'      => 0,
-            'groupStore'      => new ErrorGroupStore(),
-            'breadcrumbs'     => null,
-            'notifMatrix'     => new NotificationMatrix(),
-            'defaultRenderer' => new JsonRenderer(),
-            'renderers'       => [],
-            'responseFactory' => null,
-            'responseFactories'=> [],
-            'handlerMap'      => new ExceptionHandlerMap(),
-            'traceIdGen'      => new DefaultTraceIdGenerator(),
-            'eventDispatcher' => null,
-            'collector'       => null,
-            'maskFields'      => [],
-            'channelSelector' => null,
-        ];
-        $merged = array_merge($defaults, $config);
-
-        // Normalisasi object
-        foreach ($merged as $key => $val) {
-            if (is_array($val) && isset($val['class'])) {
-                $class = $val['class'];
-                $args = $val['args'] ?? [];
-                $merged[$key] = new $class(...$args);
-            } elseif (is_callable($val) && !is_object($val)) {
-                $merged[$key] = $val();
-            }
-        }
-        foreach (['renderers','responseFactories'] as $multi) {
-            if (!empty($merged[$multi]) && is_array($merged[$multi])) {
-                foreach ($merged[$multi] as $k => $v) {
-                    if (is_array($v) && isset($v['class'])) {
-                        $class = $v['class'];
-                        $args = $v['args'] ?? [];
-                        $merged[$multi][$k] = new $class(...$args);
-                    }
+    public static function importArray(array $flat): array {
+        $result = [];
+        foreach ($flat as $key => $value) {
+            $ref = &$result;
+            $parts = explode('.', $key);
+            foreach ($parts as $i => $part) {
+                if ($i === count($parts) - 1) $ref[$part] = $value;
+                else {
+                    if (!isset($ref[$part]) || !is_array($ref[$part])) $ref[$part] = [];
+                    $ref = &$ref[$part];
                 }
             }
         }
-        return $merged;
+        return $result;
     }
+    public static function export(array $data, string $format = 'array') {
+        if ($format === 'json') return json_encode($data, JSON_PRETTY_PRINT);
+        if ($format === 'yaml' && function_exists('yaml_emit')) return yaml_emit($data);
+        return $data;
+    }
+    public static function diff(array $a, array $b): array {
+        $flatA = self::flatten($a); $flatB = self::flatten($b); $diff = [];
+        foreach (array_keys($flatA + $flatB) as $k) {
+            if (!array_key_exists($k,$flatB)) $diff[$k]=['removed',$flatA[$k]];
+            elseif (!array_key_exists($k,$flatA)) $diff[$k]=['added',$flatB[$k]];
+            elseif($flatA[$k]!==$flatB[$k]) $diff[$k]=['changed',$flatA[$k],$flatB[$k]];
+        }
+        return $diff;
+    }
+    public static function treeDiff(array $a, array $b): array {
+        $diff = [];
+        foreach ($a as $k => $v) {
+            if (!array_key_exists($k, $b)) $diff[$k] = ['removed', $v];
+            elseif (is_array($v) && is_array($b[$k])) {
+                $d = self::treeDiff($v, $b[$k]);
+                if ($d) $diff[$k] = $d;
+            } elseif ($v !== $b[$k]) $diff[$k] = ['changed', $v, $b[$k]];
+        }
+        foreach ($b as $k => $v) {
+            if (!array_key_exists($k, $a)) $diff[$k] = ['added', $v];
+        }
+        return $diff;
+    }
+    public static function mask(array $data, array $fields = ['password', 'api_key', 'secret'], array $meta = []): array {
+        $flat = self::flatten($data);
+        foreach ($fields as $f) foreach ($flat as $k => &$v) if (stripos($k, $f)!==false) $v = '****';
+        foreach ($meta as $k => $m) if (!empty($m['mask']) && isset($flat[$k])) $flat[$k] = '****';
+        return self::importArray($flat);
+    }
+    public static function watchFiles(array $files, int $lastCheck): bool {
+        foreach ($files as $f) if (file_exists($f) && filemtime($f) > $lastCheck) return true;
+        return false;
+    }
+    public static function wildcardGet(array $array, string $pattern): array {
+        $result = [];
+        $pattern = str_replace('.', '\.', $pattern);
+        $pattern = '/^' . str_replace('\*', '[^.]+', $pattern) . '$/';
+        foreach (self::flatten($array) as $k => $v) if (preg_match($pattern, $k)) $result[$k] = $v;
+        return $result;
+    }
+    public static function envSync(string $key, $default = null) {
+        $envKey = strtoupper(str_replace('.', '_', $key));
+        return $_ENV[$envKey] ?? $_SERVER[$envKey] ?? $default;
+    }
+    public static function deepClone($arr) { return unserialize(serialize($arr)); }
+    public static function explain(array $history, string $key): ?array { return $history[$key] ?? null; }
+    public static function generateDoc(array $schema, string $format = 'md'): string {
+        if ($format === 'md') {
+            $md = "| Key | Type | Required | Default | Description |\n|---|---|---|---|---|\n";
+            foreach ($schema as $k => $r) {
+                $md .= "| `$k` | `".($r['type']??'mixed')."` | ".(!empty($r['required'])?'yes':'no')." | ".($r['default']??'')." | ".($r['desc']??'')." |\n";
+            }
+            return $md;
+        }
+        if ($format === 'json') return json_encode($schema, JSON_PRETTY_PRINT);
+        return print_r($schema, true);
+    }
+}
 
-    /**
-     * Config validator: throw InvalidArgumentException jika config tidak valid
-     */
-    protected function validateConfig(array $cfg): void {
-        // Logger: null ATAU implements LoggerInterface
-        if ($cfg['logger'] !== null && !($cfg['logger'] instanceof LoggerInterface)) {
-            throw new \InvalidArgumentException("Config: 'logger' harus null atau instance of Psr\\Log\\LoggerInterface");
+class ConfigEvent
+{
+    const TYPE_IMPORT_URL = 'importUrl';
+    const TYPE_CONFLICT = 'conflict';
+    protected static $onLoad = null, $onChange = null, $onGet = null, $onReload = null, $onPatch = null, $onError = null;
+    public static function onLoad(callable $cb) { self::$onLoad = $cb; }
+    public static function onChange(callable $cb) { self::$onChange = $cb; }
+    public static function onGet(callable $cb) { self::$onGet = $cb; }
+    public static function onReload(callable $cb) { self::$onReload = $cb; }
+    public static function onPatch(callable $cb) { self::$onPatch = $cb; }
+    public static function onError(callable $cb) { self::$onError = $cb; }
+    public static function fireLoad($key, $val, $path) { if (self::$onLoad) call_user_func(self::$onLoad, $key, $val, $path);}
+    public static function fireChange($key, $old, $new) { if (self::$onChange) call_user_func(self::$onChange, $key, $old, $new);}
+    public static function fireGet($key, $val) { if (self::$onGet) call_user_func(self::$onGet, $key, $val);}
+    public static function fireReload() { if (self::$onReload) call_user_func(self::$onReload);}
+    public static function firePatch($patch) { if (self::$onPatch) call_user_func(self::$onPatch, $patch);}
+    public static function fireError($type, $detail) { if (self::$onError) call_user_func(self::$onError, $type, $detail);}
+    public static function fireConflict($key, $old, $new) { if (self::$onError) call_user_func(self::$onError, self::TYPE_CONFLICT, ['key'=>$key,'old'=>$old,'new'=>$new]); }
+}
+
+class ConfigEnv
+{
+    public static function loadEnv(string $path = '.env'): array {
+        if (!file_exists($path)) return [];
+        $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $env = [];
+        foreach ($lines as $line) {
+            if (strpos(trim($line), '#') === 0) continue;
+            if (!strpos($line, '=')) continue;
+            [$k, $v] = explode('=', $line, 2);
+            $env[trim($k)] = trim($v, "\"' ");
         }
-        if (!($cfg['handlerMap'] instanceof ExceptionHandlerMap)) {
-            throw new \InvalidArgumentException("Config: 'handlerMap' harus instance of ExceptionHandlerMap");
+        return $env;
+    }
+    public static function importUrl(string $url): array {
+        $raw = @file_get_contents($url);
+        if (!$raw) {
+            ConfigEvent::fireError(ConfigEvent::TYPE_IMPORT_URL, $url);
+            trigger_error("ConfigEnv::importUrl failed: $url", E_USER_NOTICE);
+            return [];
         }
-        if (!($cfg['defaultRenderer'] instanceof ErrorRendererInterface)) {
-            throw new \InvalidArgumentException("Config: 'defaultRenderer' harus instance of ErrorRendererInterface");
+        $arr = [];
+        foreach (explode("\n", $raw) as $line) {
+            if (strpos(trim($line), '#') === 0) continue;
+            if (!strpos($line, '=')) continue;
+            [$k, $v] = explode('=', $line, 2);
+            $arr[trim($k)] = trim($v, "\"' ");
         }
-        if (!is_array($cfg['renderers'])) {
-            throw new \InvalidArgumentException("Config: 'renderers' harus array");
-        }
-        foreach ($cfg['renderers'] as $k => $renderer) {
-            if (!($renderer instanceof ErrorRendererInterface)) {
-                throw new \InvalidArgumentException("Config: 'renderers[$k]' harus instance of ErrorRendererInterface");
+        return $arr;
+    }
+}
+
+class ConfigBuilder
+{
+    protected array $data = [];
+    public static array $coverage = [];
+    public static function make(): self { return new self(); }
+    public function set(string $key, $val): self {
+        $ref = &$this->data;
+        $parts = explode('.', $key);
+        foreach ($parts as $i => $part) {
+            if ($i === count($parts) - 1) $ref[$part] = $val;
+            else {
+                if (!isset($ref[$part]) || !is_array($ref[$part])) $ref[$part] = [];
+                $ref = &$ref[$part];
             }
         }
-        if (!is_array($cfg['responseFactories'])) {
-            throw new \InvalidArgumentException("Config: 'responseFactories' harus array");
+        return $this;
+    }
+    public function merge(array $arr): self {
+        $this->data = array_merge_recursive($this->data, $arr);
+        return $this;
+    }
+    public function build(): array { return $this->data; }
+    public static function dumpTransform(array $data, callable $transform, array $whitelist = null): array {
+        $flat = ConfigHelper::flatten($data);
+        foreach ($flat as $k => &$v) {
+            if (is_array($whitelist) && !in_array($k, $whitelist)) continue;
+            $nv = $transform($k, $v);
+            if (gettype($nv) === gettype($v)) $v = $nv;
         }
-        foreach ($cfg['responseFactories'] as $k => $rf) {
-            if (!is_null($rf) && !is_callable($rf)) {
-                throw new \InvalidArgumentException("Config: 'responseFactories[$k]' harus callable");
+        return ConfigHelper::importArray($flat);
+    }
+    public static function cli($argv): void {
+        if (count($argv) < 2) exit("Usage: config.php <command> [args]\n");
+        $cmd = $argv[1];
+        if ($cmd === 'lint') echo "[ENHANCED19] Lint: Not implemented in this demo.\n";
+        elseif ($cmd === 'explain' && isset($argv[2])) echo "[ENHANCED19] Explain {$argv[2]}: ...\n";
+    }
+    public static function coverageTrack($key) { self::$coverage[$key] = true; }
+    public static function coverageReport(array $schema): array {
+        $all = array_keys($schema);
+        $hit = array_keys(self::$coverage);
+        $miss = array_diff($all, $hit);
+        return ['hit'=>$hit,'miss'=>$miss];
+    }
+}
+class Config implements ConfigInterface
+{
+    use ConfigTrait;
+
+    protected static array $data = [];
+    protected static array $meta = [];
+    protected static array $history = [];
+    protected static array $paths = [];
+    protected static array $priority = [];
+    protected static bool $loaded = false;
+    protected static bool $frozen = false;
+    protected static bool $strict = false;
+    protected static bool $lazyEval = false;
+    protected static bool $trackWrites = false;
+    protected static array $writeLog = [];
+    protected static array $files = [];
+    protected static int $lastCheck = 0;
+    protected static array $dataCache = [];
+    protected static array $snapshots = [];
+    protected static int $maxPointerDepth = 10;
+    protected static array $typeMap = [];
+    protected static array $policy = [];
+    protected static array $schema = [];
+    protected static array $namespaceConfig = [];
+    protected static bool $autoValidate = false;
+
+    public static function get(string $key, $default = null, $pointerDepth = 0, array $opts = [], array $visited = []): mixed
+    {
+        if (in_array($key, $visited, true)) throw new \RuntimeException("Circular pointer detected at: $key");
+        $ns = $opts['namespace'] ?? ConfigContext::getNamespace() ?? '';
+        if ($ns && isset(static::$namespaceConfig[$ns])) {
+            $v = static::$namespaceConfig[$ns]->get($key, $default, $pointerDepth, []);
+            if ($v !== null) return $v;
+        }
+        $ctx = ConfigContext::getContext();
+        if (isset($ctx['tenant'])) {
+            $tenantKey = "tenant:{$ctx['tenant']}.$key";
+            if (self::has($tenantKey)) return self::get($tenantKey, $default, $pointerDepth, $opts, $visited);
+        }
+        if (isset($ctx['locale'])) {
+            $localeKey = "locale:{$ctx['locale']}.$key";
+            if (self::has($localeKey)) return self::get($localeKey, $default, $pointerDepth, $opts, $visited);
+        }
+        foreach (array_reverse(ConfigContext::stack()) as $ctx) if (array_key_exists($key, $ctx)) return $ctx[$key];
+
+        // [DEFAULT.* fallback]
+        $defaultKey = "default.$key";
+        if (self::has($defaultKey)) return self::get($defaultKey, $default, $pointerDepth, $opts, $visited);
+
+        if (str_contains($key, '*')) {
+            $set = ConfigHelper::wildcardGet(static::$data, $key);
+            return $set ?: $default;
+        }
+        $ref = &static::$data;
+        foreach (explode('.', $key) as $part) {
+            if (!is_array($ref) || !array_key_exists($part, $ref)) {
+                if (ConfigHelper::isEnvPointer($key)) return ConfigHelper::resolveEnvPointer($key, $default);
+                $envVal = ConfigHelper::envSync($key);
+                if ($envVal !== null) return $envVal;
+                if (static::$strict) throw new \RuntimeException("Config key not found: $key");
+                return $default;
+            }
+            $ref = &$ref[$part];
+        }
+        if (is_array(static::$meta[$key]??null) && !empty(static::$meta[$key]['encrypted'])) {
+            return ConfigCrypto::decrypt($ref);
+        }
+        if (isset($ref) && ConfigHelper::isPointer($ref)) {
+            if ($pointerDepth > static::$maxPointerDepth) throw new \RuntimeException("Pointer recursion detected: $key");
+            $target = substr($ref, 1);
+            return static::get($target, $default, $pointerDepth + 1, $opts, [...$visited, $key]);
+        }
+        if (ConfigHelper::isEnvPointer($ref)) return ConfigHelper::resolveEnvPointer($ref, $default);
+        if (static::$lazyEval && is_callable($ref)) {
+            if (!array_key_exists($key, static::$dataCache)) static::$dataCache[$key] = $ref();
+            ConfigEvent::fireGet($key, static::$dataCache[$key]);
+            ConfigBuilder::coverageTrack($key);
+            return static::$dataCache[$key];
+        }
+        ConfigEvent::fireGet($key, $ref);
+        ConfigBuilder::coverageTrack($key);
+        return $ref;
+    }
+
+    public static function set(string $key, $value, $role = 'system'): void
+    {
+        if (static::$frozen) throw new \RuntimeException("Config is frozen. Cannot set $key");
+        if (isset(static::$policy[$key]) && !ConfigAdvanced::checkPolicy($key, 'set', $role)) throw new \RuntimeException("Policy denied to set config key: $key");
+        if (static::$autoValidate && isset(static::$schema[$key])) {
+            $t = gettype($value);
+            $type = static::$schema[$key]['type'] ?? null;
+            if ($type && $t !== $type) throw new \RuntimeException("Type mismatch on set($key): $t, expected $type");
+        }
+        $ref = &static::$data;
+        $parts = explode('.', $key);
+        foreach ($parts as $i => $part) {
+            if ($i === count($parts) - 1) {
+                $old = $ref[$part] ?? null;
+                $ref[$part] = $value;
+                static::$history[$key] = ['set', debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS)[0]];
+                if (static::$trackWrites) static::$writeLog[] = ['key' => $key, 'value' => $value, 'trace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS)];
+                ConfigEvent::fireChange($key, $old, $value);
+            } else {
+                if (!isset($ref[$part]) || !is_array($ref[$part])) $ref[$part] = [];
+                $ref = &$ref[$part];
             }
         }
-        if ($cfg['responseFactory'] !== null && !is_callable($cfg['responseFactory'])) {
-            throw new \InvalidArgumentException("Config: 'responseFactory' harus null atau callable");
-        }
-        if (!($cfg['groupStore'] instanceof GroupStoreInterface)) {
-            throw new \InvalidArgumentException("Config: 'groupStore' harus instance of GroupStoreInterface");
-        }
-        if (!($cfg['notifMatrix'] instanceof NotificationMatrix)) {
-            throw new \InvalidArgumentException("Config: 'notifMatrix' harus instance of NotificationMatrix");
-        }
-        if ($cfg['breadcrumbs'] !== null && !($cfg['breadcrumbs'] instanceof Breadcrumbs)) {
-            throw new \InvalidArgumentException("Config: 'breadcrumbs' harus null atau instance of Breadcrumbs");
-        }
-        if (!($cfg['traceIdGen'] instanceof TraceIdGeneratorInterface)) {
-            throw new \InvalidArgumentException("Config: 'traceIdGen' harus instance of TraceIdGeneratorInterface");
-        }
-        if ($cfg['collector'] !== null && !($cfg['collector'] instanceof ErrorCollector)) {
-            throw new \InvalidArgumentException("Config: 'collector' harus null atau instance of ErrorCollector");
-        }
-        if ($cfg['eventDispatcher'] !== null && !($cfg['eventDispatcher'] instanceof ErrorEventDispatcher)) {
-            throw new \InvalidArgumentException("Config: 'eventDispatcher' harus null atau instance of ErrorEventDispatcher");
-        }
-        if (!is_array($cfg['maskFields'])) {
-            throw new \InvalidArgumentException("Config: 'maskFields' harus array");
-        }
-        if (!is_int($cfg['errorLimit']) || $cfg['errorLimit'] < 0) {
-            throw new \InvalidArgumentException("Config: 'errorLimit' harus integer >= 0");
-        }
-        if (!is_bool($cfg['silent'])) {
-            throw new \InvalidArgumentException("Config: 'silent' harus boolean");
-        }
-        if (!is_bool($cfg['debug'])) {
-            throw new \InvalidArgumentException("Config: 'debug' harus boolean");
-        }
-        if (!is_null($cfg['channelSelector']) && !is_callable($cfg['channelSelector'])) {
-            throw new \InvalidArgumentException("Config: 'channelSelector' harus null atau callable");
-        }
     }
 
-    public function getConfig(string $key, $default = null) {
-        return $this->config[$key] ?? $default;
+    public static function setWithValidation(string $key, $value, $role = 'system'): void { static::set($key, $value, $role); }
+    public static function enableAutoValidate(bool $on = true): void { static::$autoValidate = $on; }
+    public static function getAt(string $key, $at = null) {
+        $ref = &static::$data;
+        foreach (explode('.', $key) as $part) {
+            if (!isset($ref[$part])) return null;
+            $ref = &$ref[$part];
+        }
+        if ($at && isset($ref['versions'][$at])) return $ref['versions'][$at];
+        return $ref['value'] ?? $ref ?? null;
     }
-    public function setConfig(string $key, $value): void {
-        $this->config[$key] = $value;
-        if(property_exists($this, $key)) $this->$key = $value;
+    public static function has(string $key): bool {
+        $ref = &static::$data;
+        foreach (explode('.', $key) as $part) {
+            if (!is_array($ref) || !array_key_exists($part, $ref)) return false;
+            $ref = &$ref[$part];
+        }
+        return true;
     }
-
+    public static function group(string $prefix): array {
+        $ref = &static::$data;
+        foreach (explode('.', $prefix) as $part) {
+            if (!is_array($ref) || !array_key_exists($part, $ref)) return [];
+            $ref = &$ref[$part];
+        }
+        return $ref;
+    }
+    public static function all(): array { return static::$data; }
+    public static function flatten(): array { return ConfigHelper::flatten(static::$data); }
+    public static function importArray(array $flat): void { static::merge(ConfigHelper::importArray($flat)); }
+    public static function dump(bool $asJson = false, array $maskFields = [], callable $transform = null): array|string {
+        $data = $maskFields ? ConfigHelper::mask(static::$data, $maskFields, static::$meta) : static::$data;
+        if ($transform) $data = ConfigBuilder::dumpTransform($data, $transform);
+        return $asJson ? json_encode($data, JSON_PRETTY_PRINT) : $data;
+    }
+    public static function export(string $format = 'array') { return ConfigHelper::export(static::$data, $format); }
+    public static function cacheTo(string $file, string $format = 'php'): void { file_put_contents($file, $format==='php' ? "<?php return " . var_export(static::$data,true) . ";" : json_encode(static::$data, JSON_PRETTY_PRINT)); }
+    public static function loadCache(string $file): void { static::$data = (substr($file, -4)==='.php' ? require $file : json_decode(file_get_contents($file),true)); }
+    public static function validate(array $schema): array { static::$schema = $schema; return ConfigValidator::validate(static::$data, $schema); }
+    public static function validateGroup(string $prefix, array $schema): array { return ConfigValidator::validateGroup(static::$data, $prefix, $schema); }
+    public static function schema(array $schema): array { return ConfigValidator::schema($schema); }
+    public static function strict(bool $on = true): void { static::$strict = $on; }
+    public static function enableLazyEval(bool $on = true): void { static::$lazyEval = $on; }
+    public static function enableWriteTracking(bool $on = true): void { static::$trackWrites = $on; }
+    public static function getWriteLog(): array { return static::$writeLog; }
+    public static function overrideTemp(array $override, callable $fn){ return ConfigContext::overrideTemp($override, $fn); }
+    public static function pushContext(array $override): void { ConfigContext::push($override); }
+    public static function popContext(): void { ConfigContext::pop(); }
+    public static function fake(array $data): void { ConfigContext::fake($data); }
+    public static function isTestMode(): bool { return ConfigContext::isTestMode(); }
+    public static function setContext(array $ctx): void { ConfigContext::setContext($ctx); }
+    public static function getContext(): array { return ConfigContext::getContext(); }
+    public static function setNamespace(string $ns):void { ConfigContext::setNamespace($ns);}
+    public static function getNamespace():string { return ConfigContext::getNamespace();}
+    public static function onLoad(callable $cb): void { ConfigEvent::onLoad($cb); }
+    public static function onChange(callable $cb): void { ConfigEvent::onChange($cb); }
+    public static function onGet(callable $cb): void { ConfigEvent::onGet($cb); }
+    public static function onReload(callable $cb): void { ConfigEvent::onReload($cb); }
+    public static function onPatch(callable $cb): void { ConfigEvent::onPatch($cb); }
+    public static function onError(callable $cb): void { ConfigEvent::onError($cb); }
+    public static function watch(int $interval = 3){
+        if (ConfigHelper::watchFiles(static::$files, static::$lastCheck)) static::reload();
+        static::$lastCheck = time();
+    }
+    public static function reloadIfChanged(){ if (ConfigHelper::watchFiles(static::$files, static::$lastCheck)) static::reload(); static::$lastCheck = time(); }
+    public static function diffWith(array $other): array { return ConfigHelper::diff(static::$data, $other); }
+    public static function treeDiffWith(array $other): array { return ConfigHelper::treeDiff(static::$data, $other); }
+    public static function applyPatch(array $patch, bool $validate = false): void { ConfigAdvanced::applyPatch(static::$data, $patch, $validate, static::$schema); }
+    public static function explain(string $key): ?array { return ConfigHelper::explain(static::$history, $key); }
+    public static function snapshot(?string $tag = null): array { $snap = ConfigHelper::deepClone(static::$data); if ($tag) static::$snapshots[$tag] = $snap; return $snap; }
+    public static function restoreSnapshot(string $tag): void { if (!isset(static::$snapshots[$tag])) throw new \RuntimeException("No snapshot: $tag"); static::$data = ConfigHelper::deepClone(static::$snapshots[$tag]); }
+    public static function snapshotGroup(string $prefix, ?string $tag = null): array { $group = static::group($prefix); $snap = ConfigHelper::deepClone($group); if ($tag) static::$snapshots["group:$tag"] = $snap; return $snap; }
+    public static function restoreGroupSnapshot(string $prefix, string $tag): void {
+        if (!isset(static::$snapshots["group:$tag"])) throw new \RuntimeException("No group snapshot: $tag");
+        $group = &static::$data;
+        foreach (explode('.', $prefix) as $part) { if (!isset($group[$part]) || !is_array($group[$part])) $group[$part] = []; $group = &$group[$part]; }
+        $group = ConfigHelper::deepClone(static::$snapshots["group:$tag"]);
+    }
+    public static function resolver(callable $cb): void { /* implement as needed, eg. ConfigResolver::add($cb); */ }
+    public static function builder(): ConfigBuilder { return ConfigBuilder::make(); }
+    public static function migrate(callable $cb): void { static::$data = ConfigAdvanced::migrate(static::$data, $cb); }
+    public static function generateTemplate(array $schema): string { return ConfigAdvanced::generateTemplate($schema); }
+    public static function type(string $key, string $type): void { static::$typeMap[$key] = $type; }
+    public static function enforceType($val, $type) { return ConfigAdvanced::enforceType($val, $type); }
+    public static function policy(string $key, $cbOrArr): void { static::$policy[$key] = $cbOrArr; ConfigAdvanced::policy($key, $cbOrArr); }
+    public static function generateDoc(array $schema, string $format = 'md'):string { return ConfigHelper::generateDoc($schema, $format); }
+    public static function coverageReport(): array { return ConfigBuilder::coverageReport(static::$schema); }
+    public static function loadFrom(string $dir): void {
+        if (!is_dir($dir)) throw new \InvalidArgumentException("Config dir not found: $dir");
+        foreach (glob(rtrim($dir, '/').'/*.php') as $file) {
+            $cfg = require $file;
+            if (!is_array($cfg)) throw new \RuntimeException("Config file invalid: $file");
+            foreach (ConfigHelper::flatten($cfg) as $k => $v) {
+                if (isset(static::$data[$k])) {
+                    ConfigEvent::fireConflict($k, static::$data[$k], $v);
+                }
+            }
+            static::merge($cfg, $file);
+            static::$files[] = $file;
+        }
+        static::$paths[] = $dir;
+        static::$loaded = true;
+        static::$lastCheck = time();
+    }
+    public static function loadPriority(array $paths): void { foreach ($paths as $dir) { static::loadFrom($dir); static::$priority[] = $dir; } }
+    public static function merge(array $data, string $fromFile = null, $firePatch = false): void {
+        if (static::$frozen) throw new \RuntimeException('Config is frozen.');
+        if ($fromFile) foreach (ConfigHelper::flatten($data) as $k => $v) { ConfigEvent::fireLoad($k, $v, $fromFile); static::$history[$k] = ['load', $fromFile]; }
+        static::$data = static::arrayMergeRecursive(static::$data, $data);
+        if ($firePatch) ConfigEvent::firePatch($data);
+    }
+    public static function loadEnv(string $path = '.env'): void {
+        $envArr = ConfigEnv::loadEnv($path);
+        foreach ($envArr as $k => $v) static::set($k, $v);
+    }
+    public static function importUrl(string $url): void {
+        $arr = ConfigEnv::importUrl($url);
+        static::merge($arr, $url);
+    }
+    public static function useNamespace(string $ns, ?Config $instance = null): void {
+        static::$namespaceConfig[$ns] = $instance ?? new Config();
+        ConfigContext::setNamespace($ns);
+    }
+    public static function freeze(): void { static::$frozen = true; }
+    public static function isFrozen(): bool { return static::$frozen; }
     public static function reset(): void {
-        if (PHP_SAPI !== 'cli') trigger_error("ErrorManager::reset() sebaiknya hanya dipakai untuk testing!", E_USER_WARNING);
-        self::$instance = null;
+        static::$data = [];
+        static::$meta = [];
+        static::$history = [];
+        static::$paths = [];
+        static::$priority = [];
+        static::$loaded = false;
+        static::$frozen = false;
+        static::$strict = false;
+        static::$lazyEval = false;
+        static::$trackWrites = false;
+        static::$writeLog = [];
+        static::$files = [];
+        static::$lastCheck = 0;
+        static::$dataCache = [];
+        static::$namespaceConfig = [];
+        ConfigContext::$stack = [];
+        ConfigContext::$context = [];
+        ConfigContext::$namespace = '';
     }
-
-    public static function buildReport(\Throwable $e, ErrorContext|array $ctx = [], TraceIdGeneratorInterface $traceIdGen = null, ?GroupStoreInterface $groupStore = null, ?Breadcrumbs $breadcrumbs = null): ErrorReport {
-        $context = $ctx instanceof ErrorContext ? $ctx : new ErrorContext($ctx);
-        $type = ThrowableClassifier::classify($e);
-        $code = ThrowableClassifier::httpCode($e);
-        $prev = $e->getPrevious() ? self::buildReport($e->getPrevious(), $context, $traceIdGen, $groupStore, $breadcrumbs) : null;
-        $groupStore = $groupStore ?? new ErrorGroupStore();
-        $hash = $groupStore->groupHash($e);
-        $stat = $groupStore->updateOccurrence($hash);
-        $data = $context->all();
-        if ($breadcrumbs) $data['breadcrumbs'] = $breadcrumbs->all();
-        return new ErrorReport(
-            $e->getMessage(),
-            $code,
-            $type,
-            $data,
-            $e,
-            $prev,
-            $traceIdGen,
-            $hash,
-            $stat['count'],
-            $stat['first'],
-            $stat['last']
-        );
+    public static function reload(): void {
+        $priority = static::$priority;
+        static::reset();
+        if ($priority) static::loadPriority($priority);
+        else foreach (static::$paths as $dir) static::loadFrom($dir);
+        ConfigEvent::fireReload();
     }
-    public static function instance(): self { return self::$instance ?? throw new \RuntimeException("ErrorManager not initialized"); }
-    public function enableDebug(): void { $this->debug = true; }
-    public function setChannelSelector(callable $selector): void { $this->channelSelector = $selector; }
-    public static function registerHandler(string $exceptionClass, callable|string $handler): void { self::instance()->handlerMap->register($exceptionClass, $handler); }
-    public static function registerRenderer(string $channel, ErrorRendererInterface $renderer): void { self::instance()->renderers[$channel] = $renderer; }
-    public static function registerResponseFactory(string $channel, callable $factory): void { self::instance()->responseFactories[$channel] = $factory; }
-    public static function last(): ?ErrorReport { return self::instance()->lastReport; }
-    public static function handle(\Throwable $e, ErrorContext|array $context = []): mixed {
-        $self = self::instance();
-        if ($self->errorLimit > 0 && $self->errorCount >= $self->errorLimit) return null;
-        $self->errorCount++;
-
-        $ctxObj = $context instanceof ErrorContext ? $context : new ErrorContext($context);
-        $debug = $ctxObj->get('debug') ?? $self->debug;
-        $channel = $self->channelSelector ? ($self->channelSelector)($ctxObj) : (php_sapi_name() === 'cli' ? 'cli' : 'default');
-
-        $hash = $self->groupStore->groupHash($e);
-        if (!$self->groupStore->allowLog($hash)) return null;
-        $report = self::buildReport($e, $ctxObj, $self->traceIdGen, $self->groupStore, $self->breadcrumbs);
-        $self->lastReport = $report;
-
-        $sampling = $ctxObj->get('error_sample', 1.0);
-        if ($sampling < 1.0 && mt_rand() / mt_getrandmax() > $sampling) return null;
-        if ($self->collector) $self->collector->add($report);
-        if ($self->logger) $self->logger->log($report);
-        if ($self->eventDispatcher) $self->eventDispatcher->dispatch($report);
-
-        foreach ($self->notifMatrix->getHandlers($report) as $notifHandler) $notifHandler($report, $ctxObj);
-
-        $handler = $self->handlerMap->getHandler($e);
-        if ($handler) return $handler($report, $ctxObj);
-        $factory = $self->responseFactories[$channel] ?? $self->responseFactory;
-        if ($factory) return $factory($report);
-
-        $renderer = $self->renderers[$channel] ?? ($channel === 'cli' ? new CliRenderer() : null) ?? $self->defaultRenderer;
-        try { $output = $renderer->render($report); }
-        catch (\Throwable $ex) {
-            $output = $debug ? "Error rendering failed: {$ex->getMessage()}\n---\n{$ex->getTraceAsString()}" : "Error rendering failed: {$ex->getMessage()}";
+    protected static function arrayMergeRecursive(array $a, array $b): array {
+        foreach ($b as $k => $v) {
+            if (is_array($v) && isset($a[$k]) && is_array($a[$k])) $a[$k] = static::arrayMergeRecursive($a[$k], $v);
+            else $a[$k] = $v;
         }
-        if ($self->silent && !$debug) return null;
-        if ($debug && $report->exception) $output .= "\n\nDEBUG TRACE:\n" . $report->exception->getTraceAsString();
-        return $output;
-    }
-    public static function handleAsResponse(\Throwable $e, array $context = []): Response|ResponseInterface {
-        $out = self::handle($e, $context);
-        if ($out instanceof ResponseInterface || $out instanceof Response) return $out;
-        return new Response((string)$out, 500);
-    }
-    public static function registerShutdownHandler(): void {
-        register_shutdown_function(function () {
-            $err = error_get_last();
-            if ($err && in_array($err['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
-                self::handle(
-                    new \ErrorException($err['message'], 0, $err['type'], $err['file'], $err['line']),
-                    ['source' => 'shutdown']
-                );
-            }
-        });
+        return $a;
     }
 }
+
+// Register type plugin untuk validator
+ConfigValidator::registerType('email', fn($v)=> filter_var($v, FILTER_VALIDATE_EMAIL) !== false);
+ConfigValidator::registerType('path', fn($v)=> is_string($v) && strlen($v) > 0 && $v[0] === '/');
