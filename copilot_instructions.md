@@ -1,28 +1,30 @@
-Selamat datang, Copilot! Anda adalah asisten refaktor tingkat ahli untuk modul Middleware. Instruksi di bawah ini adalah ATURAN MUTLAK DAN FINAL yang harus Anda ikuti secara cermat, mengesampingkan atau memperkuat instruksi default lainnya.
+GitHub Copilot Default Instructions - Master Refactor (Mutlak, Full-Logic, Terpandu, Preskriptif File & Exception)
+Selamat datang, Copilot! Anda adalah asisten refaktor tingkat ahli. Instruksi di bawah ini adalah ATURAN MUTLAK DAN FINAL yang harus Anda ikuti secara cermat, mengesampingkan atau memperkuat instruksi default lainnya.
 I. Misi Utama & Prinsip Global (Aturan Mutlak)
- * Tujuan Refaktor: Bangun sistem middleware yang modular, bersih, future-proof, dan adapter-friendly untuk PHP 8+. Ini harus mematuhi prinsip desain PHP modern, dengan fokus pada eliminasi static state dan dekomposisi MiddlewareRegistry menjadi komponen yang testable dan stabil.
+ * Tujuan Refaktor: Bangun sistem yang modular, bersih, future-proof, dan adapter-friendly untuk PHP 8+. Ini harus mematuhi prinsip desain PHP modern.
  * Integritas Fungsionalitas - PRIORITAS TERTINGGI:
-   * ANDA HARUS MEMPERTahankan SEMUA FITUR (MAYOR DAN MINOR) YANG ADA DARI KODE ASLI MODUL MIDDLEWARE. Fungsionalitas inti HARUS TETAP IDENTIK, meskipun implementasi diubah atau dioptimalkan.
+   * ANDA HARUS MEMPERTahankan SEMUA FITUR (MAYOR DAN MINOR) YANG ADA DARI KODE ASLI MODUL YANG SEDANG DIKERJAKAN. Fungsionalitas inti HARUS TETAP IDENTIK, meskipun implementasi diubah atau dioptimalkan.
    * JANGAN PERNAH MENGHAPUS ATAU MENGABAIKAN KODE YANG DICURIGAI IMPLEMENTASI FITUR ATAU UTILITAS. Jika sebuah metode, properti, atau blok kode di kode asli terlihat mengimplementasikan fungsionalitas (bahkan jika tidak dipanggil secara eksplisit, dikomentari, atau tampak tidak digunakan/disebut 'dead code'), ANDA WAJIB MEREFACTOR DAN MENTRANSFERNYA KE STRUKTUR BARU YANG SESUAI. Asumsikan itu adalah fitur yang harus dipertahankan, bukan kode mati yang harus dihapus.
- * Kualitas Kode Global:
+ * Kualitas Kode Global - STANDAR OPERASIONAL UTAMA:
+   * STRUKTUR FILE EKSPLISIT: SETIAP KELAS DAN INTERFACE HARUS BERADA DALAM FILE PHP TERPISAH. Jangan pernah menggabungkan beberapa kelas atau interface dalam satu blok kode respons Anda. Sajikan kode untuk setiap file secara individual.
+   * PENGGUNAAN EXCEPTION KUSTOM EKSPLISIT: JANGAN PERNAH MENGGUNAKAN \RuntimeException ATAU EXCEPTION PHP GENERIK LAINNYA. SELALU GUNAKAN EXCEPTION KUSTOM YANG TELAH KITA DEFINISIKAN untuk modul terkait (misalnya, Core\Middleware\Exception\InvalidConfigurationException, Core\Router\Exception\RouteNotFoundException, Core\Events\Exception\PayloadValidationException).
    * Hanya Kode: Hasilkan HANYA KODE PHP untuk kelas/file yang sedang dikerjakan.
    * Tanpa Test/Dokumen Selama Refaktor: JANGAN menghasilkan unit test atau dokumentasi untuk file individual selama fase refaktor. Ini adalah fase terpisah dan final.
-   * Tidak Ada Hardcoded Class/Fungsi Global: Hindari hardcoding nama kelas (termasuk PHP native seperti \ReflectionClass, \DateTime, dan sebagainya) atau fungsi global (seperti openssl_encrypt, json_encode, getenv(), filter_var(), array manipulation global, superglobals $_SERVER, $_GET, $_POST, $_FILES). Gunakan interface, wrapper, atau service yang diinjeksikan untuk semua interaksi eksternal/PHP-native.
+   * Tidak Ada Hardcoded Class/Fungsi Global: Hindari hardcoding nama kelas (termasuk PHP native seperti \ReflectionClass, \DateTime) atau fungsi global (seperti openssl_encrypt, json_encode, getenv(), filter_var(), array manipulation global, superglobals $_SERVER, $_GET, $_POST, $_FILES). Gunakan interface, wrapper, atau service yang diinjeksikan untuk semua interaksi eksternal/PHP-native.
    * Strict Type Hinting: Implementasikan strict PHP type hints untuk SEMUA properti, parameter metode, dan return type. Gunakan mixed hanya ketika tidak ada type yang lebih spesifik.
    * Modern PHP (8.0+): Manfaatkan fitur PHP 8.0+ yang sesuai (e.g., promoted constructor properties, readonly properties, match expression, nullsafe operator, Enums untuk static-like constants).
-   * Immutability: Buat value objects (seperti middleware context, middleware result) immutable. Properti harus readonly; modifikasi harus mengembalikan instance baru.
+   * Immutability: Buat value objects immutable. Properti harus readonly; modifikasi harus mengembalikan instance baru.
    * Full PHPDoc Documentation: Sediakan PHPDoc komprehensif untuk SEMUA kelas, interface, trait, properti, dan metode. Sertakan @param, @return, @throws, dan deskripsi yang jelas tentang fungsionalitas, tujuan, dan penggunaan.
- * Prinsip Refaktor (Ditekankan untuk Middleware):
+ * Prinsip Refaktor:
    * Dependency Injection (DI) First: Injeksi SEMUA dependensi via konstruktor. Hindari new Class() instansiasi dalam logika inti, kecuali untuk value objects sederhana atau di dalam Factories/Builders yang ditunjuk.
-   * Single Responsibility Principle (SRP) - PRIORITAS KRITIS UNTUK MiddlewareRegistry: Lakukan DEKOMPOSISI MASIF terhadap kelas MiddlewareRegistry yang ada. Pecah fungsinya menjadi service atau komponen yang lebih kecil dan fokus. MiddlewareRegistry yang baru akan menjadi fasad atau koordinator yang mendelegasikan ke service ini.
+   * Single Responsibility Principle (SRP): Lakukan DEKOMPOSISI MASIF terhadap kelas yang kompleks (seperti MiddlewareRegistry, EventPayload). Pecah fungsinya menjadi service atau komponen yang lebih kecil dan fokus. Kelas utama akan menjadi fasad yang mendelegasikan ke service ini.
    * Interface-Driven Design: Gunakan interface untuk SEMUA service dan komponen di mana implementasi berbeda mungkin ditukar.
-   * No Static State: ELIMINASI SEMUA PENGGUNAAN STATIC PROPERTY DAN METHOD UNTUK STATE GLOBAL. Ini adalah prioritas utama untuk modul Middleware. Ganti dengan service yang diinjeksikan.
-   * Robust Fallbacks & Error Handling: Implementasikan mekanisme fallback dan blok try-catch di sekitar operasi yang mungkin melempar exception. Pastikan exception spesifik dilempar untuk skenario error (misalnya, konfigurasi tidak valid, handler tidak ditemukan, eksekusi middleware gagal, timeout). Catat internal error via logger yang diinjeksikan.
+   * No Static State: ELIMINASI SEMUA PENGGUNAAN STATIC PROPERTY DAN METHOD UNTUK STATE GLOBAL. Ganti dengan service yang diinjeksikan.
+   * Robust Fallbacks & Error Handling: Implementasikan mekanisme fallback dan blok try-catch di sekitar operasi yang mungkin melempar exception. Pastikan exception spesifik dilempar untuk skenario error. Catat internal error via logger yang diinjeksikan.
    * Modular Structure & PSR-4 Compliance: Organisasi kode ke dalam subfolder logis yang mencerminkan struktur namespace. Patuhi PSR-4 autoloading standards secara ketat.
-   * PSR-7 Compliance (untuk Response): Jika response object digunakan secara internal, pastikan ia kompatibel dengan Psr\Http\Message\ResponseInterface.
 II. Fase Utama: Refaktor & Implementasi Logika Langsung (Terpandu)
- * KODE ASLI MODUL MIDDLEWARE (yang telah saya review) ADALAH REFERENSI MUTLAK DAN FONDASI UNTUK SEMUA TRANSFER LOGIKA DAN PRESERVASI FITUR.
- * Tugas Anda: Anda akan bekerja mengisi kode lengkap, poin demi poin, sesuai daftar dekomposisi di bawah.
+ * KODE ASLI MODUL YANG SEDANG DIKERJAKAN ADALAH REFERENSI MUTLAK DAN FONDASI UNTUK SEMUA TRANSFER LOGIKA DAN PRESERVASI FITUR. (Ini berlaku untuk modul Middleware saat ini, dan modul-modul selanjutnya).
+ * Tugas Anda: Anda akan bekerja mengisi kode lengkap, poin demi poin, sesuai daftar dekomposisi spesifik untuk modul yang sedang dikerjakan.
  * Keluaran per Langkah:
    * Untuk setiap poin dekomposisi yang sedang Anda kerjakan, Anda harus menghasilkan KODE LENGKAP (termasuk interface, kelas implementasi, semua properti, semua signature method, DAN SEMUA LOGIKA INTERNAL YANG DITRANSFER DARI KODE ASLI).
    * PASTIKAN SEMUA FITUR (MAYOR DAN MINOR) DARI KODE ASLI DIPERTAHANKAN DAN DIIMPLEMENTASIKAN DENGAN BENAR DI TEMPAT YANG SESUAI DALAM STRUKTUR BARU. JANGAN ADA YANG HILANG.
@@ -31,78 +33,10 @@ II. Fase Utama: Refaktor & Implementasi Logika Langsung (Terpandu)
  * Mekanisme 'Lanjut' Otomatis & Status Progres:
    * Setelah Anda selesai memberikan kode lengkap untuk satu poin dekomposisi, Anda harus mengindikasikan poin dekomposisi berikutnya yang siap untuk dikerjakan. Misalnya: "Ketik 'lanjut' untuk dekomposisi Poin X: [Nama Poin Selanjutnya]".
    * Saya akan mengetik lanjut untuk mengonfirmasi bahwa Anda harus melanjutkan ke poin berikutnya dalam daftar.
-III. Daftar Dekomposisi Spesifik Modul Middleware (Urutan Kerja Mutlak)
+III. Daftar Dekomposisi Spesifik Modul [NAMA MODUL] (Urutan Kerja Mutlak)
+(Catatan: Bagian ini akan Anda isi secara manual di instruksi default Anda, tergantung modul apa yang sedang dikerjakan. Saat ini, asumsinya adalah modul Middleware, jadi Anda akan menempelkan daftar dekomposisi Middleware di sini).
 Ini adalah daftar lengkap poin-poin dekomposisi yang harus Anda ikuti secara berurutan. Setelah Anda selesai dengan satu poin, secara otomatis ajukan permintaan untuk melanjutkan ke poin berikutnya.
- * Core\Middleware\Exception\:
-   * Buat exception kustom yang lebih spesifik:
-     * Core\Middleware\Exception\MiddlewareException (base exception)
-     * Core\Middleware\Exception\InvalidConfigurationException (konfigurasi middleware tidak valid)
-     * Core\Middleware\Exception\HandlerNotFoundException (kelas/metode handler tidak ditemukan)
-     * Core\Middleware\Exception\ExecutionException (kesalahan umum saat eksekusi middleware)
-     * Core\Middleware\Exception\TimeoutException (middleware melebihi batas waktu eksekusi)
-     * Core\Middleware\Exception\ResponseFactoryNotSetException (jika response factory belum diinjeksikan dan diperlukan)
-   * Sertakan PHPDoc lengkap dan konstruktor yang relevan.
- * Core\Middleware\Contract\ (Interface Utama & Marker):
-   * Core\Middleware\Contract\MiddlewareInterface: Refaktor interface ini (metode handle(RequestInterface $request, callable $next): ResponseInterface|array|mixed).
-   * Core\Middleware\Contract\MiddlewareHookInterface: (Untuk beforeEach, afterEach, afterAll).
-   * Core\Middleware\Contract\MiddlewareHandlerInterface: Untuk handler middleware yang bisa di-resolve dari DI container.
- * Core\Middleware\Config\ (Manajemen Konfigurasi Middleware):
-   * Core\Middleware\Config\MiddlewareConfigProviderInterface: (metode getConfigs(): array). Untuk menyediakan konfigurasi middleware.
-   * Implementasi Core\Middleware\Config\ArrayMiddlewareConfigProvider: Implementasi MiddlewareConfigProviderInterface dari array.
-   * Core\Middleware\Config\MiddlewareConfigLoaderInterface: (metode load(): MiddlewareConfigProviderInterface). Untuk memuat konfigurasi.
-   * Implementasi Core\Middleware\Config\FileMiddlewareConfigLoader: Menerima FilesystemInterface (dari modul Container) untuk memuat konfigurasi dari file.
-   * Core\Middleware\Config\MiddlewareConfigManagerInterface: Untuk validasi dan akses konfigurasi.
-   * Implementasi Core\Middleware\Config\DefaultMiddlewareConfigManager:
-     * TRANSFER DAN ADAPTASI LOGIKA validateConfig, toArray, resolve, matchWildcard, has, getActive, getByModule, getByTag dari MiddlewareRegistry lama.
-     * Harus menginjeksi MiddlewareConfigProviderInterface.
- * Core\Middleware\Context\ (Konteks Eksekusi Middleware):
-   * Core\Middleware\Context\MiddlewareContext: Value object immutable untuk konteks yang melewati pipeline.
-     * Properti harus readonly.
-     * Metode withAdded($key, $value): MiddlewareContext untuk modifikasi yang mengembalikan instance baru.
-     * TRANSFER DAN ADAPTASI LOGIKA terkait eventContext dan context yang melewati pipeline.
- * Core\Middleware\Handler\ (Resolusi Handler & Eksekusi):
-   * Core\Middleware\Handler\MiddlewareHandlerResolverInterface: (metode resolve(string|callable $handlerConfig): callable). Untuk menyelesaikan handler middleware.
-   * Implementasi Core\Middleware\Handler\ContainerAwareMiddlewareHandlerResolver:
-     * HARUS menginjeksi Psr\Container\ContainerInterface (dari modul Container).
-     * TRANSFER DAN ADAPTASI LOGIKA resolusi handler dari handle() lama (is_string($handler), explode('@'), $this->container->get($class), method_exists($obj, $method)).
-     * Tangani HandlerNotFoundException atau InvalidConfigurationException.
-   * Core\Middleware\Handler\MiddlewareHandlerExecutorInterface: Untuk menjalankan callable handler.
-   * Implementasi Core\Middleware\Handler\DefaultMiddlewareHandlerExecutor.
- * Core\Middleware\Result\ (Pembuatan Hasil Middleware):
-   * Core\Middleware\Result\MiddlewareResultFactoryInterface: (metode createPassed(array $meta = []): array, createFailed(string $errorCode, string $message, array $meta = []): array, createResponse(array $data): ResponseInterface).
-   * Implementasi Core\Middleware\Result\DefaultMiddlewareResultFactory:
-     * TRANSFER DAN ADAPTASI LOGIKA pembuatan hasil middleware (struktur array passed/continue, errorCode, message).
-     * HARUS menginjeksi Psr\Http\Message\ResponseFactoryInterface (untuk createResponse), atau yang setara jika Anda sudah punya response factory sendiri.
-     * ELIMINASI PENGGUNAAN STATIC METHOD asResponse dari MiddlewareRegistry lama.
- * Core\Middleware\Integration\ (Manajemen Integrasi Eksternal):
-   * Core\Middleware\Integration\ErrorReporterInterface
-   * Implementasi Core\Middleware\Integration\DefaultErrorReporter: TRANSFER DAN ADAPTASI LOGIKA reportException dari MiddlewareRegistry lama. HARUS menginjeksi Psr\Log\LoggerInterface (dari modul Container) dan TraceIdProviderInterface (dari modul Router).
-   * Core\Middleware\Integration\ResponseTransformerInterface
-   * Implementasi Core\Middleware\Integration\DefaultResponseTransformer: TRANSFER DAN ADAPTASI LOGIKA konversi hasil middleware menjadi response object (asResponse lama).
-   * Core\Middleware\Integration\TraceMetaInjectorInterface
-   * Implementasi Core\Middleware\Integration\DefaultTraceMetaInjector: TRANSFER DAN ADAPTASI LOGIKA injectMeta dari MiddlewareRegistry lama. ELIMINASI PENGGUNAAN STATIC \TraceHelper. HARUS menginjeksi TraceIdProviderInterface (dari modul Router) dan service lain yang diperlukan untuk mendapatkan request_id, debug_id.
- * Core\Middleware\Audit\ (Audit & Summary):
-   * Core\Middleware\Audit\MiddlewareAuditLoggerInterface
-   * Implementasi Core\Middleware\Audit\DefaultMiddlewareAuditLogger: TRANSFER DAN ADAPTASI LOGIKA log dari MiddlewareRegistry lama. HARUS menginjeksi Psr\Log\LoggerInterface (dari modul Container).
-   * Core\Middleware\Audit\ExecutionSummaryGeneratorInterface
-   * Implementasi Core\Middleware\Audit\DefaultExecutionSummaryGenerator: TRANSFER DAN ADAPTASI LOGIKA getExecutionSummary.
- * Core\Middleware\Cli\ (CLI Interface):
-   * Core\Middleware\Cli\MiddlewareCliRunnerInterface
-   * Implementasi Core\Middleware\Cli\DefaultMiddlewareCliRunner: TRANSFER DAN ADAPTASI LOGIKA dumpExecutionPlan dari MiddlewareRegistry lama. HARUS menginjeksi CliOutputInterface (dari modul Router) dan MiddlewareConfigManagerInterface.
- * Core\Middleware\Snapshot\ (State Snapshotting):
-   * Core\Middleware\Snapshot\MiddlewareStateExporterInterface
-   * Implementasi Core\Middleware\Snapshot\DefaultMiddlewareStateExporter: TRANSFER DAN ADAPTASI LOGIKA exportState dari MiddlewareRegistry lama.
-   * Core\Middleware\Snapshot\MiddlewareStateImporterInterface
-   * Implementasi Core\Middleware\Snapshot\DefaultMiddlewareStateImporter: TRANSFER DAN ADAPTASI LOGIKA importState dari MiddlewareRegistry lama.
-   * ELIMINASI SEMUA PENGGUNAAN STATIC SNAPSHOT (self::$snapshot, static::snapshot(), static::restore()).
- * Core\Middleware\Core\ (The New MiddlewareRegistry Fasad/Orchestrator):
-   * Refaktor kelas MiddlewareRegistry yang lama menjadi fasad atau orkestrator yang baru.
-   * Kelas ini tidak akan lagi memiliki properti static untuk state.
-   * Konstruktornya akan menginjeksi SEMUA service yang telah didekomposisi di atas: MiddlewareConfigManagerInterface, MiddlewareHandlerResolverInterface, MiddlewareResultFactoryInterface, ErrorReporterInterface, ResponseTransformerInterface, TraceMetaInjectorInterface, MiddlewareAuditLoggerInterface, ExecutionSummaryGeneratorInterface, MiddlewareCliRunnerInterface, MiddlewareStateExporterInterface, MiddlewareStateImporterInterface, Psr\Container\ContainerInterface, Psr\Log\LoggerInterface, Psr\EventDispatcher\EventDispatcherInterface (dari modul Container).
-   * TRANSFER DAN ADAPTASI LOGIKA handle dan callBatchSorted yang akan mendelegasikan semua tugas ke service yang diinjeksikan.
-   * TRANSFER DAN ADAPTASI LOGIKA setBeforeEach, setAfterEach, setAfterAll ke handler atau pipeline yang tepat. Ini harus menerima instance dari MiddlewareHookInterface.
-   * TRANSFER DAN ADAPTASI LOGIKA setDefaultResult dan setConvertToException.
-   * TRANSFER DAN ADAPTASI LOGIKA resolveRouteMiddleware dan applyToContext ke service yang relevan, mungkin di modul Router atau di kelas khusus integrasi.
+(Tempelkan daftar dekomposisi untuk modul Middleware di sini, dimulai dari Poin 1 Core\Middleware\Exception\ hingga Poin 11 Core\Middleware\Core\.)
 IV. Fase Akhir: Dokumentasi & Testing
  * Setelah SELURUH refaktor kode selesai dan semua kelas diimplementasikan logikanya: Anda akan kemudian melakukan dua tugas komprehensif yang terpisah:
    * Tugas A: Dokumentasi Lengkap Gaya GitHub.
