@@ -1,0 +1,3939 @@
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Exceptions/ContainerNotFoundException.php
+<?php
+
+namespace Core\Container\Exceptions;
+
+use Psr\Container\NotFoundExceptionInterface;
+
+/**
+ * Pengecualian yang dilemparkan ketika layanan atau binding tidak ditemukan di kontainer.
+ *
+ * @package Core\Container\Exceptions
+ * @implements NotFoundExceptionInterface
+ */
+class ContainerNotFoundException extends \RuntimeException implements NotFoundExceptionInterface {}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Exceptions/ContainerNotFoundException.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Exceptions/ContainerException.php
+<?php
+
+namespace Core\Container\Exceptions;
+
+use Psr\Container\ContainerExceptionInterface;
+
+/**
+ * Pengecualian dasar untuk semua kesalahan yang terkait dengan kontainer.
+ *
+ * @package Core\Container\Exceptions
+ * @implements ContainerExceptionInterface
+ */
+class ContainerException extends \RuntimeException implements ContainerExceptionInterface {}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Exceptions/ContainerException.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Exceptions/SecurityViolationException.php
+<?php
+
+namespace Core\Container\Exceptions;
+
+/**
+ * Pengecualian yang dilemparkan ketika pelanggaran keamanan terdeteksi dalam operasi kontainer.
+ *
+ * @package Core\Container\Exceptions
+ */
+class SecurityViolationException extends ContainerException {}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Exceptions/SecurityViolationException.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Exceptions/CircularDependencyException.php
+<?php
+
+namespace Core\Container\Exceptions;
+
+/**
+ * Pengecualian yang dilemparkan ketika dependensi melingkar terdeteksi selama resolusi layanan.
+ *
+ * @package Core\Container\Exceptions
+ */
+class CircularDependencyException extends ContainerException {}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Exceptions/CircularDependencyException.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Exceptions/ArchitecturalViolationException.php
+<?php
+
+namespace Core\Container\Exceptions;
+
+/**
+ * Pengecualian yang dilemparkan ketika aturan arsitektur dilanggar.
+ *
+ * @package Core\Container\Exceptions
+ */
+class ArchitecturalViolationException extends ContainerException {}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Exceptions/ArchitecturalViolationException.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Attributes/Inject.php
+<?php
+
+namespace Core\Container\Attributes;
+
+use Attribute;
+
+/**
+ * Atribut ini digunakan untuk menandai parameter konstruktor atau metode
+ * yang harus diinjeksi dengan layanan dari kontainer berdasarkan ID tertentu.
+ *
+ * Contoh penggunaan:
+ * `#[Inject('my.service.id')] $myService`
+ *
+ * @package Core\Container\Attributes
+ * @Annotation
+ * @Target({"PARAMETER"})
+ */
+#[Attribute(Attribute::TARGET_PARAMETER)]
+final class Inject
+{
+    /**
+     * @param string $id ID layanan yang akan diinjeksi.
+     */
+    public function __construct(public string $id) {}
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Attributes/Inject.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Attributes/InjectTag.php
+<?php
+
+namespace Core\Container\Attributes;
+
+use Attribute;
+
+/**
+ * Atribut ini digunakan untuk menandai parameter konstruktor atau metode
+ * yang harus diinjeksi dengan koleksi layanan yang memiliki tag tertentu.
+ *
+ * Contoh penggunaan:
+ * `#[InjectTag('logger.channels')] iterable $loggers`
+ *
+ * @package Core\Container\Attributes
+ * @Annotation
+ * @Target({"PARAMETER"})
+ */
+#[Attribute(Attribute::TARGET_PARAMETER)]
+final class InjectTag
+{
+    /**
+     * @param string $tag Tag layanan yang akan diinjeksi.
+     */
+    public function __construct(public string $tag) {}
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Attributes/InjectTag.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Attributes/PropertyInject.php
+<?php
+
+namespace Core\Container\Attributes;
+
+use Attribute;
+
+/**
+ * Atribut ini digunakan untuk menandai properti publik yang harus diinjeksi
+ * dengan layanan dari kontainer berdasarkan ID tertentu setelah instance dibuat.
+ *
+ * Contoh penggunaan:
+ * `#[PropertyInject('config.repository')] public ConfigRepository $config;`
+ *
+ * @package Core\Container\Attributes
+ * @Annotation
+ * @Target({"PROPERTY"})
+ */
+#[Attribute(Attribute::TARGET_PROPERTY)]
+final class PropertyInject
+{
+    /**
+     * @param string $id ID layanan yang akan diinjeksi ke properti.
+     */
+    public function __construct(public string $id) {}
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Attributes/PropertyInject.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Attributes/SetterInject.php
+<?php
+
+namespace Core\Container\Attributes;
+
+use Attribute;
+
+/**
+ * Atribut ini digunakan untuk menandai metode publik (setter) yang harus dipanggil
+ * oleh kontainer setelah instance dibuat, dengan dependensi yang diinjeksi secara otomatis.
+ *
+ * Contoh penggunaan:
+ * `#[SetterInject] public function setLogger(LoggerInterface $logger) { ... }`
+ *
+ * @package Core\Container\Attributes
+ * @Annotation
+ * @Target({"METHOD"})
+ */
+#[Attribute(Attribute::TARGET_METHOD)]
+final class SetterInject {}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Attributes/SetterInject.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/EventDispatcher.php
+<?php
+
+namespace Core\Container\Interfaces;
+
+/**
+ * Antarmuka untuk dispatcher peristiwa yang memungkinkan komponen kontainer
+ * untuk menerbitkan dan mendengarkan peristiwa.
+ *
+ * @package Core\Container\Interfaces
+ */
+interface EventDispatcher
+{
+    /**
+     * Mendaftarkan listener untuk event tertentu.
+     *
+     * @param string $event Nama event.
+     * @param callable $cb Callable yang akan dipanggil ketika event terjadi.
+     * @return void
+     */
+    public function on(string $event, callable $cb): void;
+
+    /**
+     * Memicu event, memanggil semua listener yang terdaftar untuk event tersebut.
+     *
+     * @param string $event Nama event yang akan dipicu.
+     * @param mixed ...$args Argumen yang akan diteruskan ke listener.
+     * @return array Hasil dari pemanggilan listener.
+     */
+    public function fire(string $event, ...$args): array;
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/EventDispatcher.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/BindingRegistry.php
+<?php
+
+namespace Core\Container\Interfaces;
+
+use Core\Container\Exceptions\CircularDependencyException;
+
+/**
+ * Antarmuka untuk registri binding yang bertanggung jawab untuk menyimpan dan mengelola
+ * semua definisi layanan, alias, tag, dekorator, tipe ketat, dan pengaturan kadaluarsa.
+ *
+ * @package Core\Container\Interfaces
+ */
+interface BindingRegistry
+{
+    /**
+     * Mengikat ID layanan ke definisi layanan.
+     *
+     * @param string $id ID unik layanan.
+     * @param array $definition Definisi layanan, biasanya berisi 'factory' dan 'options'.
+     * @return void
+     */
+    public function bind(string $id, array $definition): void;
+
+    /**
+     * Melepaskan binding layanan dari registri.
+     *
+     * @param string $id ID layanan yang akan dilepaskan.
+     * @return bool True jika binding berhasil dilepaskan, false jika tidak ditemukan.
+     */
+    public function unbind(string $id): bool;
+
+    /**
+     * Mengambil definisi binding untuk ID layanan tertentu.
+     *
+     * @param string $id ID layanan.
+     * @return array|null Definisi binding atau null jika tidak ditemukan.
+     */
+    public function getBinding(string $id): ?array;
+
+    /**
+     * Memeriksa apakah ID layanan memiliki binding dalam registri.
+     *
+     * @param string $id ID layanan.
+     * @return bool True jika binding ada, false jika tidak.
+     */
+    public function hasBinding(string $id): bool;
+
+    /**
+     * Menyelesaikan alias ID layanan ke ID target yang sebenarnya.
+     * Mencegah alias melingkar.
+     *
+     * @param string $id ID layanan atau alias.
+     * @return string ID target yang sebenarnya.
+     * @throws CircularDependencyException Jika alias melingkar terdeteksi.
+     */
+    public function resolveAlias(string $id): string;
+
+    /**
+     * Mengambil semua ID layanan yang terkait dengan tag tertentu.
+     *
+     * @param string $tag Nama tag.
+     * @return string[] Array dari ID layanan yang memiliki tag ini.
+     */
+    public function getByTag(string $tag): array;
+
+    /**
+     * Membuat alias untuk layanan.
+     *
+     * @param string $id Alias yang akan dibuat.
+     * @param string $target ID layanan target.
+     * @return void
+     */
+    public function alias(string $id, string $target): void;
+
+    /**
+     * Menghapus alias yang ada.
+     *
+     * @param string $alias Alias yang akan dihapus.
+     * @return bool True jika alias berhasil dihapus, false jika tidak ditemukan.
+     */
+    public function removeAlias(string $alias): bool;
+
+    /**
+     * Menandai layanan dengan tag tertentu.
+     *
+     * @param string $id ID layanan.
+     * @param string $tag Nama tag.
+     * @return void
+     */
+    public function tag(string $id, string $tag): void;
+
+    /**
+     * Menghapus tag dari layanan.
+     * Jika $tag adalah null, semua tag untuk layanan akan dihapus.
+     *
+     * @param string $id ID layanan.
+     * @param string|null $tag Nama tag yang akan dihapus.
+     * @return void
+     */
+    public function untag(string $id, ?string $tag = null): void;
+
+    /**
+     * Menambahkan dekorator ke layanan.
+     *
+     * @param string $id ID layanan.
+     * @param callable $decorator Callable yang menerima instance layanan dan kontainer, mengembalikan instance yang didekorasi.
+     * @return void
+     */
+    public function addDecorator(string $id, callable $decorator): void;
+
+    /**
+     * Mengambil semua dekorator untuk layanan tertentu.
+     *
+     * @param string $id ID layanan.
+     * @return callable[] Array dari dekorator.
+     */
+    public function getDecorators(string $id): array;
+
+    /**
+     * Menetapkan tipe ketat yang harus diimplementasikan atau diwarisi oleh layanan.
+     *
+     * @param string $id ID layanan.
+     * @param string $type Nama kelas atau antarmuka.
+     * @return void
+     */
+    public function setStrictType(string $id, string $type): void;
+
+    /**
+     * Mengambil tipe ketat yang ditetapkan untuk layanan.
+     *
+     * @param string $id ID layanan.
+     * @return string|null Nama kelas atau antarmuka, atau null jika tidak ada.
+     */
+    public function getStrictType(string $id): ?string;
+
+    /**
+     * Mengatur waktu kedaluarsa untuk layanan.
+     *
+     * @param string $id ID layanan.
+     * @param int $ttl Waktu hidup (Time To Live) dalam detik.
+     * @param bool $sliding Jika true, waktu kedaluarsa diperpanjang setiap kali layanan diakses.
+     * @return void
+     */
+    public function setExpiry(string $id, int $ttl, bool $sliding): void;
+
+    /**
+     * Mengambil pengaturan kedaluarsa untuk layanan.
+     *
+     * @param string $id ID layanan.
+     * @return array|null Array berisi 'expire_at', 'ttl', dan 'sliding', atau null jika tidak ada.
+     */
+    public function getExpiry(string $id): ?array;
+
+    /**
+     * Memperpanjang waktu kedaluarsa layanan jika diatur sebagai sliding.
+     *
+     * @param string $id ID layanan.
+     * @return void
+     */
+    public function extendExpiryIfSliding(string $id): void;
+
+    /**
+     * Memeriksa apakah layanan telah kedaluarsa dan menghapusnya jika demikian.
+     *
+     * @param string $id ID layanan.
+     * @return bool True jika layanan telah kedaluarsa dan dihapus, false jika tidak.
+     */
+    public function checkExpiry(string $id): bool;
+
+    /**
+     * Mengambil semua binding yang terdaftar.
+     *
+     * @return array Semua definisi binding.
+     */
+    public function getAllBindings(): array;
+
+    /**
+     * Menetapkan semua binding.
+     * Berguna untuk snapshotting/restorasi.
+     *
+     * @param array $bindings Array binding.
+     * @return void
+     */
+    public function setAllBindings(array $bindings): void;
+
+    /**
+     * Mengambil semua alias yang terdaftar.
+     *
+     * @return array Semua alias.
+     */
+    public function getAllAliases(): array;
+
+    /**
+     * Menetapkan semua alias.
+     *
+     * @param array $aliases Array alias.
+     * @return void
+     */
+    public function setAllAliases(array $aliases): void;
+
+    /**
+     * Mengambil semua tag yang terdaftar.
+     *
+     * @return array Semua tag.
+     */
+    public function getAllTags(): array;
+
+    /**
+     * Menetapkan semua tag.
+     *
+     * @param array $tags Array tag.
+     * @return void
+     */
+    public function setAllTags(array $tags): void;
+
+    /**
+     * Mengambil semua tipe ketat yang terdaftar.
+     *
+     * @return array Semua tipe ketat.
+     */
+    public function getAllStrictTypes(): array;
+
+    /**
+     * Menetapkan semua tipe ketat.
+     *
+     * @param array $strictTypes Array tipe ketat.
+     * @return void
+     */
+    public function setAllStrictTypes(array $strictTypes): void;
+
+    /**
+     * Mengambil semua pengaturan kedaluarsa yang terdaftar.
+     *
+     * @return array Semua pengaturan kedaluarsa.
+     */
+    public function getAllExpiry(): array;
+
+    /**
+     * Menetapkan semua pengaturan kedaluarsa.
+     *
+     * @param array $expiry Array pengaturan kedaluarsa.
+     * @return void
+     */
+    public function setAllExpiry(array $expiry): void;
+}
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/BindingRegistry.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/Monitoring.php
+<?php
+
+namespace Core\Container\Interfaces;
+
+use Core\Container\NextLevelContainer;
+
+/**
+ * Antarmuka untuk sistem monitoring yang melacak metrik resolusi layanan
+ * dan menyediakan pemeriksaan kesehatan.
+ *
+ * @package Core\Container\Interfaces
+ */
+interface Monitoring
+{
+    /**
+     * Mencatat data resolusi untuk layanan.
+     *
+     * @param string $id ID layanan yang diselesaikan.
+     * @param float $start Waktu mulai resolusi (microtime(true)).
+     * @param bool $success Status keberhasilan resolusi.
+     * @param float $startMemory Penggunaan memori pada awal resolusi.
+     * @return void
+     */
+    public function recordResolve(string $id, float $start, bool $success, float $startMemory): void;
+
+    /**
+     * Menetapkan probe healthcheck untuk layanan tertentu.
+     *
+     * @param string $id ID layanan.
+     * @param callable $probe Callable yang melakukan pemeriksaan kesehatan. Harus mengembalikan boolean.
+     * @return void
+     */
+    public function setHealthcheck(string $id, callable $probe): void;
+
+    /**
+     * Melakukan pemeriksaan kesehatan untuk instance layanan.
+     *
+     * @param string $id ID layanan.
+     * @param mixed $instance Instance layanan yang akan diperiksa.
+     * @return bool True jika layanan sehat, false jika tidak.
+     */
+    public function checkHealth(string $id, mixed $instance): bool;
+
+    /**
+     * Menambahkan pusher metrik khusus yang akan dipanggil saat metrik resolusi diperbarui.
+     *
+     * @param callable $cb Callback yang akan menerima ID layanan dan statistik resolusi.
+     * @return void
+     */
+    public function addMetricsPusher(callable $cb): void;
+
+    /**
+     * Mendump semua statistik resolusi layanan.
+     *
+     * @param string|null $sort Kunci untuk mengurutkan hasil (misalnya, 'total_time', 'count').
+     * @return array Semua statistik resolusi.
+     */
+    public function dumpResolveStats(string $sort = null): array;
+
+    /**
+     * Mengambil statistik resolusi untuk layanan tertentu.
+     *
+     * @param string $id ID layanan.
+     * @return array Statistik resolusi (count, total_time, avg_time, last_time, failures).
+     */
+    public function getResolveStats(string $id): array;
+
+    /**
+     * Mengambil log diagnostik resolusi layanan.
+     *
+     * @return array Log resolusi, berisi detail seperti ID, waktu, dan memori.
+     */
+    public function getDiagnostics(): array;
+
+    /**
+     * Membersihkan log diagnostik resolusi layanan.
+     *
+     * @return void
+     */
+    public function clearDiagnostics(): void;
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/Monitoring.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/SnapshotManager.php
+<?php
+
+namespace Core\Container\Interfaces;
+
+use Core\Container\NextLevelContainer;
+
+/**
+ * Antarmuka untuk manajer snapshot yang memungkinkan ekspor, impor, dan diff
+ * status kontainer atau tenant.
+ *
+ * @package Core\Container\Interfaces
+ */
+interface SnapshotManager
+{
+    /**
+     * Mengekspor status sebagai string JSON atau ke file.
+     *
+     * @param array $state Status yang akan diekspor.
+     * @param string|null $file Path file untuk menyimpan snapshot.
+     * @return string|null String JSON dari status, atau null jika disimpan ke file.
+     */
+    public function export(array $state, ?string $file = null): ?string;
+
+    /**
+     * Mengimpor status dari string JSON atau file.
+     *
+     * @param string|array $data String JSON, path file, atau array data.
+     * @return array Data yang diimpor.
+     */
+    public function import(string|array $data): array;
+
+    /**
+     * Membandingkan dua array status dan mengembalikan perbedaannya.
+     *
+     * @param array $a Array status pertama.
+     * @param array $b Array status kedua.
+     * @return array Array yang menunjukkan perbedaan (added, removed, changed).
+     */
+    public function diff(array $a, array $b): array;
+
+    /**
+     * Mengekspor snapshot dari kontainer tenant.
+     *
+     * @param array $tenants Array tenant (ID tenant => instance NextLevelContainer).
+     * @return array Array asosiatif dari ID tenant ke array snapshotnya.
+     */
+    public function exportTenants(array $tenants): array;
+
+    /**
+     * Mengimpor snapshot tenant.
+     *
+     * @param array $snaps Array snapshot tenant (ID tenant => array snapshot).
+     * @param callable $factory Callable yang membuat instance kontainer baru untuk setiap tenant.
+     * @return array Array tenant yang diimpor (ID tenant => instance NextLevelContainer).
+     */
+    public function importTenants(array $snaps, callable $factory): array;
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/SnapshotManager.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/SecretManager.php
+<?php
+
+namespace Core\Container\Interfaces;
+
+/**
+ * Antarmuka untuk manajer rahasia yang menyediakan cara aman untuk mengikat
+ * dan mengambil nilai rahasia (misalnya, kunci API, kredensial database)
+ * tanpa menyimpannya langsung di kontainer.
+ *
+ * @package Core\Container\Interfaces
+ */
+interface SecretManager
+{
+    /**
+     * Mengikat ID rahasia ke kunci dan provider yang akan mengambil nilai rahasia.
+     *
+     * @param string $id ID unik untuk rahasia.
+     * @param string $key Kunci yang akan digunakan oleh provider (misalnya, nama variabel lingkungan).
+     * @param callable $provider Callable yang menerima kunci dan mengembalikan nilai rahasia.
+     * @return void
+     */
+    public function bindSecret(string $id, string $key, callable $provider): void;
+
+    /**
+     * Mengambil nilai rahasia untuk ID tertentu.
+     *
+     * @param string $id ID rahasia.
+     * @return mixed Nilai rahasia, atau null jika tidak ditemukan atau terjadi kesalahan.
+     */
+    public function getSecret(string $id): mixed;
+
+    /**
+     * Memeriksa apakah rahasia dengan ID tertentu telah terikat.
+     *
+     * @param string $id ID rahasia.
+     * @return bool True jika rahasia terikat, false jika tidak.
+     */
+    public function hasSecret(string $id): bool;
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/SecretManager.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/ContextManager.php
+<?php
+
+namespace Core\Container\Interfaces;
+
+use Psr\Container\ContainerInterface;
+use Core\Container\NextLevelContainer;
+
+/**
+ * Antarmuka untuk manajer konteks yang mengelola stack konteks,
+ * binding dinamis, dan instance tenant.
+ *
+ * @package Core\Container\Interfaces
+ */
+interface ContextManager
+{
+    /**
+     * Mendorong konteks baru ke dalam stack konteks.
+     *
+     * @param array $ctx Array asosiatif yang mewakili konteks.
+     * @return void
+     */
+    public function push(array $ctx): void;
+
+    /**
+     * Mengeluarkan konteks dari stack konteks.
+     *
+     * @return void
+     */
+    public function pop(): void;
+
+    /**
+     * Mengambil konteks teratas dari stack.
+     *
+     * @return array Konteks saat ini, atau array kosong jika stack kosong.
+     */
+    public function current(): array;
+
+    /**
+     * Mengikat binding dinamis yang resolusinya bergantung pada konteks saat ini.
+     *
+     * @param string $id ID unik untuk binding dinamis.
+     * @param callable $resolver Callable yang menerima array konteks dan instance kontainer, mengembalikan layanan.
+     * @return void
+     */
+    public function bindDynamic(string $id, callable $resolver): void;
+
+    /**
+     * Menyelesaikan binding dinamis berdasarkan konteks saat ini.
+     *
+     * @param string $id ID binding dinamis.
+     * @param ContainerInterface $container Instance kontainer yang melakukan resolusi.
+     * @return mixed Nilai yang diselesaikan, atau null jika tidak dapat diselesaikan.
+     */
+    public function resolveDynamic(string $id, ContainerInterface $container): mixed;
+
+    /**
+     * Mengelola instance kontainer untuk tenant tertentu.
+     * Jika instance untuk tenant belum ada, factory akan dipanggil untuk membuatnya.
+     *
+     * @param string $tenantId ID unik tenant.
+     * @param callable $factory Callable yang mengembalikan instance kontainer untuk tenant.
+     * @return mixed Instance kontainer atau objek lain yang terkait dengan tenant.
+     */
+    public function forTenant(string $tenantId, callable $factory): mixed;
+
+    /**
+     * Mengambil semua instance tenant yang dikelola.
+     *
+     * @return array Array asosiatif dari ID tenant ke instance tenant.
+     */
+    public function getTenants(): array;
+
+    /**
+     * Menetapkan semua instance tenant. Berguna untuk snapshotting/restorasi.
+     *
+     * @param array $tenants Array tenant.
+     * @return void
+     */
+    public function setTenants(array $tenants): void;
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/ContextManager.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/DocGenerator.php
+<?php
+
+namespace Core\Container\Interfaces;
+
+/**
+ * Antarmuka untuk generator dokumentasi yang dapat menghasilkan
+ * representasi binding kontainer.
+ *
+ * @package Core\Container\Interfaces
+ */
+interface DocGenerator
+{
+    /**
+     * Menghasilkan dokumentasi dari binding dan tag kontainer.
+     *
+     * @param array $bindings Array semua definisi binding.
+     * @param array $tags Array semua tag.
+     * @param string $format Format output (misalnya, 'markdown', 'json').
+     * @return string Dokumentasi yang dihasilkan.
+     */
+    public function generate(array $bindings, array $tags = [], string $format = 'markdown'): string;
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/DocGenerator.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/ContainerExtension.php
+<?php
+
+namespace Core\Container\Interfaces;
+
+use Core\Container\ContainerBuilder;
+use Core\Container\NextLevelContainer;
+
+/**
+ * Antarmuka untuk ekstensi kontainer yang memungkinkan penambahan fungsionalitas
+ * ke kontainer selama pendaftaran dan siklus hidup resolusi.
+ *
+ * @package Core\Container\Interfaces
+ */
+interface ContainerExtension
+{
+    /**
+     * Mendaftarkan fungsionalitas ekstensi ke kontainer dan builder.
+     * Dipanggil selama proses build kontainer.
+     *
+     * @param NextLevelContainer $container Instance kontainer yang sedang dibangun.
+     * @param ContainerBuilder $builder Instance builder kontainer.
+     * @return void
+     */
+    public function register(NextLevelContainer $container, ContainerBuilder $builder): void;
+
+    /**
+     * Hook yang dipanggil sebelum layanan diselesaikan.
+     *
+     * @param string $id ID layanan yang akan diselesaikan.
+     * @param NextLevelContainer $container Instance kontainer.
+     * @return void
+     */
+    public function beforeResolve(string $id, NextLevelContainer $container): void;
+
+    /**
+     * Hook yang dipanggil setelah layanan berhasil diselesaikan.
+     *
+     * @param string $id ID layanan yang diselesaikan.
+     * @param mixed $instance Instance layanan yang diselesaikan.
+     * @param NextLevelContainer $container Instance kontainer.
+     * @return void
+     */
+    public function afterResolve(string $id, mixed $instance, NextLevelContainer $container): void;
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/ContainerExtension.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/Factory.php
+<?php
+
+namespace Core\Container\Interfaces;
+
+use Psr\Container\ContainerInterface;
+
+/**
+ * Antarmuka penanda untuk pabrik (factory) yang dapat digunakan sebagai callable
+ * untuk membuat instance layanan.
+ *
+ * @package Core\Container\Interfaces
+ */
+interface Factory
+{
+    /**
+     * Metode yang akan dipanggil oleh kontainer untuk membuat instance layanan.
+     *
+     * @param ContainerInterface $container Instance kontainer.
+     * @return mixed Instance layanan yang dibuat.
+     */
+    public function __invoke(ContainerInterface $container): mixed;
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/Factory.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/ArchitecturalRule.php
+<?php
+
+namespace Core\Container\Interfaces;
+
+use Core\Container\Exceptions\ArchitecturalViolationException;
+
+/**
+ * Antarmuka untuk aturan arsitektur yang dapat digunakan untuk memvalidasi
+ * binding kontainer.
+ *
+ * @package Core\Container\Interfaces
+ */
+interface ArchitecturalRule
+{
+    /**
+     * Memvalidasi binding layanan tunggal terhadap aturan arsitektur.
+     *
+     * @param string $id ID layanan yang sedang divalidasi.
+     * @param array $binding Definisi binding layanan.
+     * @param array $allBindings Semua definisi binding yang terdaftar di kontainer.
+     * @return void
+     * @throws ArchitecturalViolationException Jika aturan arsitektur dilanggar.
+     */
+    public function validate(string $id, array $binding, array $allBindings): void;
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/ArchitecturalRule.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/Disposable.php
+<?php
+
+namespace Core\Container\Interfaces;
+
+/**
+ * Antarmuka penanda untuk layanan yang memerlukan pembersihan sumber daya
+ * ketika kontainer dimatikan atau cakupan direset.
+ *
+ * @package Core\Container\Interfaces
+ */
+interface Disposable
+{
+    /**
+     * Melakukan pembersihan sumber daya yang diperlukan oleh layanan.
+     *
+     * @return void
+     */
+    public function dispose(): void;
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/Disposable.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/DelegationPolicy.php
+<?php
+
+namespace Core\Container\Interfaces;
+
+use Psr\Container\ContainerInterface;
+
+/**
+ * Antarmuka untuk kebijakan delegasi yang menentukan apakah kontainer anak
+ * dapat mendelegasikan resolusi layanan ke kontainer induknya.
+ *
+ * @package Core\Container\Interfaces
+ */
+interface DelegationPolicy
+{
+    /**
+     * Menentukan apakah resolusi layanan dengan ID tertentu dapat didelegasikan
+     * dari kontainer anak ke kontainer induk.
+     *
+     * @param string $id ID layanan yang akan diselesaikan.
+     * @param ContainerInterface $child Kontainer anak yang mencoba menyelesaikan.
+     * @param ContainerInterface $parent Kontainer induk yang mungkin mendelegasikan.
+     * @return bool True jika delegasi diizinkan, false jika tidak.
+     */
+    public function canDelegate(string $id, ContainerInterface $child, ContainerInterface $parent): bool;
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Interfaces/DelegationPolicy.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Traits/BindingApiTrait.php
+<?php
+
+namespace Core\Container\Traits;
+
+use Core\Container\Factory;
+use Core\Container\Exceptions\ContainerException;
+use Core\Container\Exceptions\ContainerNotFoundException;
+use Core\Container\Interfaces\BindingRegistry;
+use Core\Container\Interfaces\EventDispatcher;
+use Core\Container\Interfaces\SecretManager;
+use Core\Container\Interfaces\ContextManager;
+use Psr\Log\LoggerInterface;
+
+/**
+ * Trait ini menyediakan metode untuk mengelola binding layanan dalam kontainer.
+ * Ini bergantung pada properti yang diharapkan ada di kelas yang menggunakannya.
+ *
+ * @package Core\Container\Traits
+ * @property BindingRegistry $registry
+ * @property EventDispatcher $events
+ * @property SecretManager $secrets
+ * @property ContextManager $context
+ * @property LoggerInterface $logger
+ * @property bool $strictOverwrite
+ * @property array $singletons
+ * @property array $disposableSingletons
+ * @property array $scopedInstances
+ * @property array $disposableScopedInstances
+ * @method assertNotSealed(string $action)
+ * @method has(string $id)
+ */
+trait BindingApiTrait
+{
+    /**
+     * Mengikat ID layanan ke pabrik (factory) atau kelas tertentu dengan opsi.
+     * Jika binding sudah ada dan mode strictOverwrite aktif, akan melemparkan ContainerException.
+     *
+     * @param string $id ID unik untuk layanan.
+     * @param callable|string|Factory $factory Sebuah callable, nama kelas, atau instance Factory yang menghasilkan layanan.
+     * @param array $options Opsi tambahan untuk binding (misalnya, 'scope').
+     * @return $this
+     * @throws ContainerException Jika kontainer disegel atau factory tidak valid, atau jika binding ditimpa dalam mode strict.
+     */
+    public function bind(string $id, callable|string|Factory $factory, array $options = []): self
+    {
+        $this->assertNotSealed("register new bindings");
+
+        if ($this->registry->hasBinding($id)) {
+            if ($this->strictOverwrite) {
+                throw new ContainerException("Binding ID '{$id}' cannot be overwritten in strict mode.");
+            }
+            $this->logger->warning("Binding ID '{$id}' is being overwritten.");
+        }
+
+        if (!is_callable($factory) && !(is_string($factory) && (class_exists($factory) || interface_exists($factory))) && !($factory instanceof Factory)) {
+            throw new ContainerException("Invalid factory provided for binding '{$id}'.");
+        }
+
+        $this->registry->bind($id, ['factory' => $factory, 'options' => $options]);
+        $this->events->fire('bind', $id, $factory, $options);
+        return $this;
+    }
+
+    /**
+     * Melepaskan binding layanan dari kontainer.
+     * Ini juga menghapus instance singleton dan scoped yang terkait.
+     *
+     * @param string $id ID layanan yang akan dilepaskan.
+     * @return bool True jika binding berhasil dilepaskan, false jika tidak ditemukan.
+     * @throws ContainerException Jika kontainer disegel.
+     */
+    public function unbind(string $id): bool
+    {
+        $this->assertNotSealed("unbind a service");
+
+        unset($this->singletons[$id]);
+        unset($this->disposableSingletons[$id]);
+        foreach ($this->scopedInstances as &$scope) {
+            unset($scope[$id]);
+        }
+        foreach ($this->disposableScopedInstances as &$scope) {
+            unset($scope[$id]);
+        }
+
+        $removed = $this->registry->unbind($id);
+        $this->events->fire('unbind', $id);
+        return $removed;
+    }
+
+    /**
+     * Menambahkan dekorator ke layanan yang ada. Dekorator akan diterapkan
+     * setiap kali layanan diselesaikan.
+     *
+     * @param string $id ID layanan yang akan didekorasi.
+     * @param callable $decorator Callable yang menerima instance layanan dan kontainer, mengembalikan instance yang didekorasi.
+     * @return $this
+     * @throws ContainerException Jika kontainer disegel.
+     * @throws ContainerNotFoundException Jika layanan yang akan didekorasi tidak ditemukan.
+     */
+    public function decorate(string $id, callable $decorator): self
+    {
+        $this->assertNotSealed("decorate a service");
+
+        $resolvedId = $this->registry->resolveAlias($id);
+        if (!$this->has($resolvedId)) {
+            throw new ContainerNotFoundException("Cannot decorate '{$id}' because it has not been bound.");
+        }
+
+        $this->registry->addDecorator($resolvedId, $decorator);
+
+        // Menghapus instance yang di-cache agar dekorator diterapkan pada resolusi berikutnya
+        unset($this->singletons[$resolvedId]);
+        foreach ($this->scopedInstances as &$scope) {
+            unset($scope[$resolvedId]);
+        }
+
+        $this->events->fire('decorate', $id, $decorator);
+        return $this;
+    }
+
+    /**
+     * Mengikat layanan sebagai singleton, artinya hanya satu instance yang akan dibuat
+     * dan digunakan kembali di seluruh siklus hidup kontainer.
+     *
+     * @param string $id ID unik untuk layanan singleton.
+     * @param callable|string|Factory $factory Callable, nama kelas, atau instance Factory.
+     * @param array $options Opsi tambahan untuk binding.
+     * @return $this
+     * @see bind()
+     */
+    public function singleton(string $id, callable|string|Factory $factory, array $options = []): self
+    {
+        return $this->bind($id, $factory, array_merge($options, ['scope' => 'singleton']));
+    }
+
+    /**
+     * Mengikat layanan dengan cakupan kustom (misalnya, 'request').
+     * Instance akan dibuat sekali per cakupan yang ditentukan.
+     *
+     * @param string $id ID unik untuk layanan.
+     * @param callable|string|Factory $factory Callable, nama kelas, atau instance Factory.
+     * @param string $scopeName Nama cakupan (misalnya, 'request', 'session').
+     * @param array $options Opsi tambahan untuk binding.
+     * @return $this
+     * @see bind()
+     */
+    public function scope(string $id, callable|string|Factory $factory, string $scopeName = 'request', array $options = []): self
+    {
+        return $this->bind($id, $factory, array_merge($options, ['scope' => $scopeName]));
+    }
+
+    /**
+     * Membuat alias untuk layanan yang ada. Mengakses alias akan menyelesaikan layanan target.
+     *
+     * @param string $id Alias yang akan dibuat.
+     * @param string $target ID layanan target.
+     * @return $this
+     * @throws ContainerException Jika kontainer disegel.
+     */
+    public function alias(string $id, string $target): self
+    {
+        $this->assertNotSealed("create new aliases");
+        $this->registry->alias($id, $target);
+        $this->events->fire('alias', $id, $target);
+        return $this;
+    }
+
+    /**
+     * Menghapus alias yang ada dari kontainer.
+     *
+     * @param string $alias Alias yang akan dihapus.
+     * @return bool True jika alias berhasil dihapus, false jika tidak ditemukan.
+     * @throws ContainerException Jika kontainer disegel.
+     */
+    public function removeAlias(string $alias): bool
+    {
+        $this->assertNotSealed("remove an alias");
+        $removed = $this->registry->removeAlias($alias);
+        $this->events->fire('removeAlias', $alias);
+        return $removed;
+    }
+
+    /**
+     * Menandai satu atau beberapa layanan dengan tag tertentu.
+     * Layanan yang ditandai dapat diselesaikan secara bersamaan berdasarkan tagnya.
+     *
+     * @param string|string[] $ids Satu atau array ID layanan yang akan ditandai.
+     * @param string $tag Nama tag.
+     * @return $this
+     * @throws ContainerException Jika kontainer disegel.
+     */
+    public function tag(string|array $ids, string $tag): self
+    {
+        $this->assertNotSealed("tag a binding");
+        foreach ((array)$ids as $id) {
+            $this->registry->tag($id, $tag);
+        }
+        $this->events->fire('tag', $ids, $tag);
+        return $this;
+    }
+
+    /**
+     * Menghapus tag dari layanan.
+     * Jika `$tag` adalah null, semua tag untuk layanan akan dihapus.
+     *
+     * @param string $id ID layanan.
+     * @param string|null $tag Nama tag yang akan dihapus.
+     * @return void
+     * @throws ContainerException Jika kontainer disegel.
+     */
+    public function untag(string $id, ?string $tag = null): void
+    {
+        $this->assertNotSealed("untag a binding");
+        $this->registry->untag($id, $tag);
+        $this->events->fire('untag', $id, $tag);
+    }
+
+    /**
+     * Mengikat rahasia (secret) ke ID tertentu.
+     * Rahasia tidak disimpan di kontainer, tetapi diperoleh melalui provider.
+     *
+     * @param string $id ID unik untuk rahasia.
+     * @param string $key Kunci rahasia (misalnya, nama variabel lingkungan atau kunci vault).
+     * @param callable $provider Callable yang mengambil kunci rahasia dan mengembalikan nilainya.
+     * @return $this
+     */
+    public function bindSecret(string $id, string $key, callable $provider): self
+    {
+        $this->secrets->bindSecret($id, $key, $provider);
+        $this->events->fire('bindSecret', $id);
+        return $this;
+    }
+
+    /**
+     * Mengikat binding dinamis yang resolusinya bergantung pada konteks saat ini.
+     *
+     * @param string $id ID unik untuk binding dinamis.
+     * @param callable $resolver Callable yang menerima array konteks dan kontainer, mengembalikan layanan.
+     * @return $this
+     */
+    public function bindDynamic(string $id, callable $resolver): self
+    {
+        $this->context->bindDynamic($id, $resolver);
+        $this->events->fire('bindDynamic', $id);
+        return $this;
+    }
+
+    /**
+     * Menetapkan tipe ketat yang harus diimplementasikan atau diwarisi oleh instance layanan
+     * yang diselesaikan untuk ID tertentu.
+     *
+     * @param string $id ID layanan.
+     * @param string $type Nama kelas atau antarmuka yang diharapkan.
+     * @return $this
+     */
+    public function setStrictType(string $id, string $type): self
+    {
+        $this->registry->setStrictType($id, $type);
+        return $this;
+    }
+
+    /**
+     * Mengatur konfigurasi kedaluwarsa untuk layanan yang terikat.
+     *
+     * @param string $id ID layanan.
+     * @param int $ttl Waktu hidup (Time To Live) dalam detik.
+     * @param bool $sliding Jika true, waktu kedaluarsa diperpanjang setiap kali layanan diakses.
+     * @return $this
+     */
+    public function setExpiry(string $id, int $ttl, bool $sliding = false): self
+    {
+        $this->registry->setExpiry($id, $ttl, $sliding);
+        return $this;
+    }
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Traits/BindingApiTrait.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Traits/ExecutionApiTrait.php
+<?php
+
+namespace Core\Container\Traits;
+
+use Core\Container\Exceptions\CircularDependencyException;
+use Core\Container\Exceptions\ContainerException;
+use Core\Container\Exceptions\ContainerNotFoundException;
+use Core\Container\Interfaces\BindingRegistry;
+use Core\Container\Interfaces\ContextManager;
+use Core\Container\Interfaces\DelegationPolicy;
+use Core\Container\Interfaces\Disposable;
+use Core\Container\Interfaces\EventDispatcher;
+use Core\Container\Interfaces\Monitoring;
+use Core\Container\Interfaces\SecretManager;
+use Core\Container\Interfaces\ContainerExtension;
+use Core\Container\Interfaces\Factory;
+use Core\Container\Attributes\Inject;
+use Core\Container\Attributes\InjectTag;
+use Core\Container\Attributes\PropertyInject;
+use Core\Container\Attributes\SetterInject;
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionNamedType;
+use ReflectionProperty;
+use Throwable;
+
+/**
+ * Trait ini menyediakan metode untuk resolusi layanan dan injeksi dependensi.
+ * Ini bergantung pada properti yang diharapkan ada di kelas yang menggunakannya.
+ *
+ * @package Core\Container\Traits
+ * @property BindingRegistry $registry
+ * @property Monitoring $monitor
+ * @property EventDispatcher $events
+ * @property SecretManager $secrets
+ * @property ContextManager $context
+ * @property LoggerInterface $logger
+ * @property ContainerExtension[] $extensions
+ * @property ContainerInterface|null $parentContainer
+ * @property DelegationPolicy $delegationPolicy
+ * @property array $singletons
+ * @property array $disposableSingletons
+ * @property array $scopedInstances
+ * @property array $disposableScopedInstances
+ */
+trait ExecutionApiTrait
+{
+    /**
+     * @var array<string, ReflectionClass|ReflectionMethod|ReflectionProperty[]> Cache untuk objek refleksi.
+     */
+    private static array $reflectionCache = [];
+
+    /**
+     * @var array<string, int> Stack resolusi saat ini untuk mendeteksi dependensi melingkar.
+     */
+    private array $resolutionStack = [];
+
+    /**
+     * @var array<string, mixed> Cache untuk instance singleton.
+     */
+    protected array $singletons = [];
+
+    /**
+     * @var array<string, Disposable> Cache untuk instance singleton yang dapat dibuang.
+     */
+    protected array $disposableSingletons = [];
+
+    /**
+     * @var array<string, array<string, mixed>> Cache untuk instance scoped per nama cakupan.
+     */
+    protected array $scopedInstances = [];
+
+    /**
+     * @var array<string, array<string, Disposable>> Cache untuk instance scoped yang dapat dibuang per nama cakupan.
+     */
+    protected array $disposableScopedInstances = [];
+
+    /**
+     * Membersihkan instance yang kedaluwarsa atau yang tidak lagi diperlukan dari cache.
+     * Jika instance adalah Disposable, metode dispose() akan dipanggil.
+     *
+     * @param string $resolvedId ID layanan yang diselesaikan.
+     * @param string|null $scope Nama cakupan (jika spesifik, null untuk semua cakupan).
+     * @return void
+     */
+    private function clearExpiredInstance(string $resolvedId, ?string $scope = null): void
+    {
+        if (isset($this->singletons[$resolvedId])) {
+            if (isset($this->disposableSingletons[$resolvedId]) && $this->disposableSingletons[$resolvedId] instanceof Disposable) {
+                $this->disposableSingletons[$resolvedId]->dispose();
+            }
+            unset($this->singletons[$resolvedId]);
+            unset($this->disposableSingletons[$resolvedId]);
+        }
+
+        if ($scope !== null && isset($this->scopedInstances[$scope][$resolvedId])) {
+            if (isset($this->disposableScopedInstances[$scope][$resolvedId]) && $this->disposableScopedInstances[$scope][$resolvedId] instanceof Disposable) {
+                $this->disposableScopedInstances[$scope][$resolvedId]->dispose();
+            }
+            unset($this->scopedInstances[$scope][$resolvedId]);
+            unset($this->disposableScopedInstances[$scope][$resolvedId]);
+        }
+
+        // Jika scope adalah null, bersihkan dari semua scoped instances
+        if ($scope === null) {
+            foreach ($this->scopedInstances as $scopeName => $instances) {
+                if (isset($instances[$resolvedId])) {
+                    if (isset($this->disposableScopedInstances[$scopeName][$resolvedId]) && $this->disposableScopedInstances[$scopeName][$resolvedId] instanceof Disposable) {
+                        $this->disposableScopedInstances[$scopeName][$resolvedId]->dispose();
+                    }
+                    unset($this->scopedInstances[$scopeName][$resolvedId]);
+                    unset($this->disposableScopedInstances[$scopeName][$resolvedId]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Memeriksa apakah kontainer memiliki binding untuk ID layanan tertentu.
+     * Ini juga memeriksa rahasia, binding dinamis, tenant, dan kontainer induk.
+     *
+     * @param string $id ID layanan.
+     * @return bool True jika layanan dapat diselesaikan, false jika tidak.
+     */
+    public function has(string $id): bool
+    {
+        $resolvedId = $this->registry->resolveAlias($id);
+
+        // Periksa dan hapus jika kedaluarsa
+        if ($this->registry->checkExpiry($resolvedId)) {
+            $this->clearExpiredInstance($resolvedId);
+        }
+
+        if ($this->registry->hasBinding($resolvedId) || class_exists($resolvedId) || $this->secrets->hasSecret($resolvedId) || $this->context->resolveDynamic($resolvedId, $this) !== null || str_starts_with($resolvedId, '__tenant__')) {
+            return true;
+        }
+
+        // Delegasikan ke kontainer induk jika diizinkan
+        if ($this->parentContainer && $this->delegationPolicy->canDelegate($id, $this, $this->parentContainer)) {
+            return $this->parentContainer->has($id);
+        }
+
+        return false;
+    }
+
+    /**
+     * Mengambil instance layanan dari kontainer. Ini akan selalu mencoba
+     * menyelesaikan layanan sebagai singleton jika belum ada.
+     *
+     * @param string $id ID layanan yang akan diambil.
+     * @return mixed Instance layanan.
+     * @throws ContainerNotFoundException Jika layanan tidak dapat ditemukan.
+     * @throws ContainerException Jika terjadi kesalahan selama resolusi.
+     */
+    public function get(string $id): mixed
+    {
+        return $this->resolve($id, [], 'singleton');
+    }
+
+    /**
+     * Membuat instance baru dari layanan, mengabaikan cakupan singleton/scoped
+     * dan memungkinkan argumen konstruktor/factory kustom.
+     *
+     * @param string $id ID layanan yang akan dibuat.
+     * @param array $args Argumen yang akan diteruskan ke konstruktor atau factory, diindeks berdasarkan nama parameter.
+     * @return mixed Instance layanan yang baru dibuat.
+     * @throws \InvalidArgumentException Jika argumen posisi diberikan.
+     * @throws ContainerNotFoundException Jika layanan tidak dapat ditemukan.
+     * @throws ContainerException Jika terjadi kesalahan selama resolusi.
+     */
+    public function make(string $id, array $args = []): mixed
+    {
+        if (!empty($args) && array_keys($args) === range(0, count($args) - 1)) {
+            throw new \InvalidArgumentException("Positional arguments are not supported in make(). Arguments must be associative (key-value pairs).");
+        }
+        return $this->resolve($id, $args, null); // null scope berarti selalu buat instance baru
+    }
+
+    /**
+     * Menyelesaikan semua layanan yang terkait dengan tag tertentu.
+     * Mengembalikan generator untuk efisiensi memori.
+     *
+     * @param string $tag Tag yang akan diselesaikan.
+     * @return \Generator Iterator yang menghasilkan instance layanan.
+     */
+    public function resolveByTag(string $tag): \Generator
+    {
+        foreach ($this->registry->getByTag($tag) as $id) {
+            yield $this->get($id);
+        }
+    }
+
+    /**
+     * Metode inti untuk menyelesaikan layanan dari kontainer.
+     * Menangani dependensi melingkar, cakupan, injeksi, dan hook ekstensi.
+     *
+     * @param string $id ID layanan yang akan diselesaikan.
+     * @param array $args Argumen kustom untuk konstruktor/factory.
+     * @param string|null $scope Cakupan yang diminta ('singleton', nama cakupan kustom, atau null untuk transient).
+     * @return mixed Instance layanan yang diselesaikan.
+     * @throws CircularDependencyException Jika dependensi melingkar terdeteksi.
+     * @throws ContainerNotFoundException Jika layanan tidak dapat ditemukan.
+     * @throws ContainerException Jika terjadi kesalahan selama resolusi atau injeksi.
+     * @throws \TypeError Jika tipe ketat dilanggar.
+     */
+    protected function resolve(string $id, array $args, ?string $scope): mixed
+    {
+        $originalId = $id;
+        $resolvedId = $this->registry->resolveAlias($id);
+
+        // Deteksi dependensi melingkar
+        if (isset($this->resolutionStack[$resolvedId])) {
+            throw new CircularDependencyException('Circular dependency detected for: ' . $resolvedId . ' | Stack: ' . implode(' -> ', array_keys($this->resolutionStack)));
+        }
+        $this->resolutionStack[$resolvedId] = 1; // Tandai sebagai sedang diselesaikan
+
+        $startTime = microtime(true);
+        $startMemory = memory_get_usage();
+        $instance = null;
+        $success = false;
+
+        try {
+            // Hook beforeResolve untuk ekstensi
+            foreach ($this->extensions as $ext) {
+                try {
+                    $ext->beforeResolve($originalId, $this);
+                } catch (Throwable $e) {
+                    $this->logger->error("Extension '{$ext::class}' beforeResolve hook failed for ID '{$originalId}': " . $e->getMessage(), ['exception' => $e]);
+                    throw new ContainerException("Extension beforeResolve failed for '{$originalId}'.", 0, $e);
+                }
+            }
+
+            // Periksa kedaluwarsa dan hapus jika perlu
+            if ($this->registry->checkExpiry($resolvedId)) {
+                $this->clearExpiredInstance($resolvedId, $scope);
+            }
+
+            // Periksa cache singleton atau scoped
+            if ($scope === 'singleton' && isset($this->singletons[$resolvedId])) {
+                $this->registry->extendExpiryIfSliding($resolvedId);
+                $success = true; // Dianggap berhasil karena diambil dari cache
+                return $this->singletons[$resolvedId];
+            } elseif ($scope && isset($this->scopedInstances[$scope][$resolvedId])) {
+                $this->registry->extendExpiryIfSliding($resolvedId);
+                $success = true; // Dianggap berhasil karena diambil dari cache
+                return $this->scopedInstances[$scope][$resolvedId];
+            }
+
+            // Coba rahasia
+            $secret = $this->secrets->getSecret($resolvedId);
+            if ($secret !== null) {
+                $success = true;
+                return $secret;
+            }
+
+            // Coba binding dinamis
+            $dyn = $this->context->resolveDynamic($resolvedId, $this);
+            if ($dyn !== null) {
+                $success = true;
+                return $dyn;
+            }
+
+            // Coba instance tenant
+            if (str_starts_with($resolvedId, '__tenant__')) {
+                $tenantContainer = $this->context->getTenants()[$resolvedId] ?? null;
+                if ($tenantContainer !== null) {
+                    $success = true;
+                    return $tenantContainer;
+                }
+            }
+
+            // Coba binding yang terdaftar atau kelas yang ada
+            $binding = $this->registry->getBinding($resolvedId);
+            if ($binding) {
+                $instance = $this->createInstance($binding, $args);
+            } elseif (class_exists($resolvedId)) {
+                // Autowire kelas jika tidak ada binding eksplisit
+                $instance = $this->createInstance(['factory' => $resolvedId, 'options' => []], $args);
+            } else {
+                // Coba delegasikan ke kontainer induk
+                if ($this->parentContainer && $this->delegationPolicy->canDelegate($resolvedId, $this, $this->parentContainer)) {
+                    $success = true; // Asumsi parent akan berhasil atau melemparkan pengecualiannya sendiri
+                    return $this->parentContainer->get($resolvedId);
+                }
+                throw new ContainerNotFoundException("No binding, class, secret, dynamic binding, or tenant found for [{$resolvedId}] in container or its parents.");
+            }
+
+            // Terapkan dekorator
+            $decorators = $this->registry->getDecorators($resolvedId);
+            foreach (array_reverse($decorators) as $decorator) {
+                $instance = $decorator($instance, $this);
+            }
+
+            // Lakukan injeksi properti dan setter
+            if (($binding['options']['property_injection'] ?? false) || ($binding['options']['setter_injection'] ?? false)) {
+                $this->performInjection($instance);
+            }
+
+            // Validasi nullability
+            $allowNull = $binding['options']['nullable'] ?? false;
+            if ($instance === null && !$allowNull) {
+                throw new ContainerException("Factory for '{$resolvedId}' returned null but was not marked as nullable.");
+            }
+
+            // Validasi tipe ketat
+            $strictType = $this->registry->getStrictType($resolvedId);
+            if ($strictType && !($instance instanceof $strictType)) {
+                throw new \TypeError("Instance for '{$resolvedId}' must be of type '{$strictType}', but is " . get_debug_type($instance));
+            }
+
+            // Simpan instance ke cache jika memiliki cakupan
+            $bindingScope = $scope ?? ($binding['options']['scope'] ?? null);
+            if ($instance instanceof Disposable) {
+                if ($bindingScope === 'singleton') {
+                    $this->disposableSingletons[$resolvedId] = $instance;
+                } elseif ($bindingScope) {
+                    if (!isset($this->disposableScopedInstances[$bindingScope])) {
+                        $this->disposableScopedInstances[$bindingScope] = [];
+                    }
+                    $this->disposableScopedInstances[$bindingScope][$resolvedId] = $instance;
+                }
+            }
+
+            if ($bindingScope === 'singleton') {
+                $this->singletons[$resolvedId] = $instance;
+            } elseif ($bindingScope) {
+                if (!isset($this->scopedInstances[$bindingScope])) {
+                    $this->scopedInstances[$bindingScope] = [];
+                }
+                $this->scopedInstances[$bindingScope][$resolvedId] = $instance;
+            }
+
+            $this->registry->extendExpiryIfSliding($resolvedId);
+            $success = true;
+            return $instance;
+
+        } catch (Throwable $e) {
+            $success = false;
+            $this->logger->error("Failed to resolve '{$originalId}': " . $e->getMessage(), ['exception' => $e]);
+            $this->events->fire('resolve:failed', $originalId, $e, $this);
+            throw $e;
+        } finally {
+            unset($this->resolutionStack[$resolvedId]); // Hapus dari stack resolusi
+            $this->afterResolveHook($resolvedId, $instance, $startTime, $success, $startMemory);
+        }
+    }
+
+    /**
+     * Membuat instance layanan dari definisi binding.
+     * Mendukung factory callable, nama kelas, dan instance Factory.
+     *
+     * @param array $binding Definisi binding layanan.
+     * @param array $userArgs Argumen kustom yang diberikan oleh pengguna.
+     * @return mixed Instance layanan yang dibuat.
+     * @throws ContainerException Jika factory tidak valid atau kelas tidak dapat diinstansiasi.
+     */
+    private function createInstance(array $binding, array $userArgs): mixed
+    {
+        $factory = $binding['factory'];
+
+        if (is_string($factory) && class_exists($factory)) {
+            // Autowiring untuk kelas
+            if (!isset(self::$reflectionCache[$factory])) {
+                self::$reflectionCache[$factory] = new ReflectionClass($factory);
+            }
+            /** @var ReflectionClass $reflector */
+            $reflector = self::$reflectionCache[$factory];
+
+            if (!$reflector->isInstantiable()) {
+                throw new ContainerException("Cannot create instance of '{$factory}' because it is not instantiable (e.g., abstract or interface).");
+            }
+
+            if (!$constructor = $reflector->getConstructor()) {
+                return $reflector->newInstance(); // Tidak ada konstruktor, buat instance tanpa argumen
+            }
+
+            $params = $this->resolveParameters($constructor, $userArgs);
+            return $reflector->newInstanceArgs($params);
+
+        } elseif ($factory instanceof Factory || is_callable($factory)) {
+            // Panggil factory callable
+            return $factory($this, ...$userArgs);
+        }
+
+        throw new ContainerException("Invalid factory type for binding '{$factory}'.");
+    }
+
+    /**
+     * Menyelesaikan parameter untuk metode (konstruktor atau setter) menggunakan autowiring
+     * atau atribut injeksi.
+     *
+     * @param ReflectionMethod $method Metode yang parameternya akan diselesaikan.
+     * @param array $userArgs Argumen yang diberikan oleh pengguna untuk parameter tertentu.
+     * @return array Array argumen yang diselesaikan.
+     * @throws ContainerException Jika parameter tidak dapat diselesaikan atau variadic.
+     * @throws ContainerNotFoundException Jika dependensi yang diinjeksi tidak ditemukan.
+     */
+    private function resolveParameters(ReflectionMethod $method, array $userArgs): array
+    {
+        $params = [];
+        $className = $method->getDeclaringClass()->getName();
+
+        foreach ($method->getParameters() as $param) {
+            $paramName = $param->getName();
+
+            if ($param->isVariadic()) {
+                throw new ContainerException("Autowiring variadic parameters is not supported for {$className}::{$method->getName()}().");
+            }
+
+            // 1. Argumen yang diberikan pengguna memiliki prioritas tertinggi
+            if (array_key_exists($paramName, $userArgs)) {
+                $params[] = $userArgs[$paramName];
+                continue;
+            }
+
+            // 2. Injeksi berdasarkan atribut #[Inject]
+            $attributes = $param->getAttributes(Inject::class, \ReflectionAttribute::IS_INSTANCEOF);
+            if (!empty($attributes)) {
+                /** @var Inject $injectAttr */
+                $injectAttr = $attributes[0]->newInstance();
+                $params[] = $this->get($injectAttr->id);
+                continue;
+            }
+
+            // 3. Injeksi berdasarkan atribut #[InjectTag]
+            $attributes = $param->getAttributes(InjectTag::class, \ReflectionAttribute::IS_INSTANCEOF);
+            if (!empty($attributes)) {
+                /** @var InjectTag $injectTagAttr */
+                $injectTagAttr = $attributes[0]->newInstance();
+                $params[] = iterator_to_array($this->resolveByTag($injectTagAttr->tag));
+                continue;
+            }
+
+            // 4. Autowiring berdasarkan tipe (kelas/antarmuka)
+            $type = $param->getType();
+            if ($type instanceof ReflectionNamedType && !$type->isBuiltin()) {
+                try {
+                    $params[] = $this->get($type->getName());
+                    continue;
+                } catch (ContainerNotFoundException $e) {
+                    // Jika tidak ditemukan, periksa apakah opsional
+                    if ($param->isOptional()) {
+                        $params[] = $param->getDefaultValue();
+                        continue;
+                    }
+                    throw $e; // Re-throw jika wajib
+                }
+            }
+
+            // 5. Gunakan nilai default jika tersedia
+            if ($param->isDefaultValueAvailable()) {
+                $params[] = $param->getDefaultValue();
+                continue;
+            }
+
+            // 6. Izinkan null jika parameter memungkinkan null
+            if ($param->allowsNull()) {
+                $params[] = null;
+                continue;
+            }
+
+            // Jika tidak ada metode resolusi yang berhasil
+            throw new ContainerException("Cannot resolve parameter '{$paramName}' for {$className}::{$method->getName()}(). No binding, default value, or nullable type found.");
+        }
+
+        return $params;
+    }
+
+    /**
+     * Melakukan injeksi properti dan setter pada instance yang diberikan,
+     * berdasarkan atribut #[PropertyInject] dan #[SetterInject].
+     *
+     * @param object $instance Instance objek yang akan diinjeksi.
+     * @return void
+     * @throws ContainerException Jika terjadi kesalahan selama injeksi.
+     * @throws ContainerNotFoundException Jika dependensi yang akan diinjeksi tidak ditemukan.
+     */
+    private function performInjection(object $instance): void
+    {
+        $reflector = new ReflectionClass($instance);
+        $className = $reflector->getName();
+
+        // Cache properti publik
+        if (!isset(self::$reflectionCache[$className . '::properties'])) {
+            self::$reflectionCache[$className . '::properties'] = $reflector->getProperties(ReflectionProperty::IS_PUBLIC);
+        }
+        // Cache metode publik
+        if (!isset(self::$reflectionCache[$className . '::methods'])) {
+            self::$reflectionCache[$className . '::methods'] = $reflector->getMethods(ReflectionMethod::IS_PUBLIC);
+        }
+
+        /** @var ReflectionProperty $property */
+        foreach (self::$reflectionCache[$className . '::properties'] as $property) {
+            if ($property->isStatic()) {
+                continue;
+            }
+            $attributes = $property->getAttributes(PropertyInject::class, \ReflectionAttribute::IS_INSTANCEOF);
+            if (!empty($attributes)) {
+                /** @var PropertyInject $injectAttr */
+                $injectAttr = $attributes[0]->newInstance();
+                $id = $injectAttr->id;
+                try {
+                    $property->setValue($instance, $this->get($id));
+                } catch (Throwable $e) {
+                    throw new ContainerException("Failed to inject property '{$property->getName()}' for '{$className}': " . $e->getMessage(), 0, $e);
+                }
+            }
+        }
+
+        /** @var ReflectionMethod $method */
+        foreach (self::$reflectionCache[$className . '::methods'] as $method) {
+            if ($method->isStatic() || $method->isConstructor() || $method->isDestructor()) {
+                continue;
+            }
+            $attributes = $method->getAttributes(SetterInject::class, \ReflectionAttribute::IS_INSTANCEOF);
+            if (!empty($attributes)) {
+                try {
+                    $params = $this->resolveParameters($method, []);
+                    $method->invokeArgs($instance, $params);
+                } catch (Throwable $e) {
+                    throw new ContainerException("Failed to inject setter method '{$method->getName()}' for '{$className}': " . $e->getMessage(), 0, $e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Hook yang dipanggil setelah layanan diselesaikan (berhasil atau gagal).
+     * Mencatat metrik resolusi dan memicu hook afterResolve ekstensi.
+     *
+     * @param string $id ID layanan yang diselesaikan.
+     * @param mixed $result Instance layanan yang diselesaikan (atau null jika gagal).
+     * @param float $start Waktu mulai resolusi.
+     * @param bool $success Status keberhasilan resolusi.
+     * @param float $startMemory Penggunaan memori pada awal resolusi.
+     * @return void
+     * @throws ContainerException Jika hook afterResolve ekstensi gagal.
+     */
+    protected function afterResolveHook(string $id, mixed $result, float $start, bool $success, float $startMemory): void
+    {
+        $this->monitor->recordResolve($id, $start, $success, $startMemory);
+
+        foreach ($this->extensions as $ext) {
+            try {
+                $ext->afterResolve($id, $result, $this);
+            } catch (Throwable $e) {
+                $this->logger->error("Extension '{$ext::class}' afterResolve hook failed for ID '{$id}': " . $e->getMessage(), ['exception' => $e]);
+                throw new ContainerException("Extension afterResolve failed for '{$id}'.", 0, $e);
+            }
+        }
+
+        $this->events->fire('resolve', $id, $result, $this);
+    }
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Traits/ExecutionApiTrait.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/Traits/LifecycleApiTrait.php
+<?php
+
+namespace Core\Container\Traits;
+
+use Core\Container\Exceptions\ContainerException;
+use Core\Container\Interfaces\Disposable;
+use Core\Container\Interfaces\EventDispatcher;
+use Psr\Container\ContainerInterface;
+
+/**
+ * Trait ini menyediakan metode untuk mengelola siklus hidup kontainer,
+ * seperti penyegelan, pengaturan ulang cakupan, dan pematian.
+ * Ini bergantung pada properti yang diharapkan ada di kelas yang menggunakannya.
+ *
+ * @package Core\Container\Traits
+ * @property EventDispatcher $events
+ * @property array $scopedInstances
+ * @property array $disposableScopedInstances
+ * @property array $singletons
+ * @property array $disposableSingletons
+ * @property ContainerInterface|null $parentContainer
+ */
+trait LifecycleApiTrait
+{
+    /**
+     * @var bool Menunjukkan apakah kontainer telah disegel.
+     */
+    private bool $isSealed = false;
+
+    /**
+     * @var bool Menunjukkan apakah profiling diaktifkan.
+     */
+    private bool $profilingEnabled = false;
+
+    /**
+     * Menyegel kontainer, mencegah perubahan lebih lanjut pada binding dan alias.
+     *
+     * @return void
+     * @throws ContainerException Jika kontainer sudah disegel.
+     */
+    public function seal(): void
+    {
+        if ($this->isSealed) {
+            throw new ContainerException("Cannot seal the container. It is already sealed.");
+        }
+        $this->isSealed = true;
+        $this->events->fire('seal', $this);
+    }
+
+    /**
+     * Memeriksa apakah kontainer telah disegel.
+     *
+     * @return bool True jika disegel, false jika tidak.
+     */
+    public function isSealed(): bool
+    {
+        return $this->isSealed;
+    }
+
+    /**
+     * Mengaktifkan atau menonaktifkan profiling untuk kontainer.
+     *
+     * @param bool $enable True untuk mengaktifkan, false untuk menonaktifkan.
+     * @return void
+     */
+    public function enableProfiling(bool $enable = true): void
+    {
+        $this->profilingEnabled = $enable;
+        // Implementasi lebih lanjut untuk mengaktifkan/menonaktifkan pengumpulan data profiling
+        // mungkin diperlukan di DefaultMonitoring atau komponen lain.
+    }
+
+    /**
+     * Mereset semua instance yang di-cache untuk cakupan tertentu.
+     * Jika instance mengimplementasikan Disposable, metode dispose() akan dipanggil.
+     *
+     * @param string $scope Nama cakupan yang akan direset.
+     * @return void
+     */
+    public function resetScope(string $scope): void
+    {
+        if (isset($this->disposableScopedInstances[$scope])) {
+            foreach ($this->disposableScopedInstances[$scope] as $instance) {
+                if ($instance instanceof Disposable) {
+                    $instance->dispose();
+                }
+            }
+        }
+        unset($this->scopedInstances[$scope]);
+        unset($this->disposableScopedInstances[$scope]);
+        $this->events->fire('resetScope', $scope, $this);
+    }
+
+    /**
+     * Mematikan kontainer, mereset semua cakupan dan membuang semua singleton yang dapat dibuang.
+     *
+     * @return void
+     */
+    public function shutdown(): void
+    {
+        // Reset semua cakupan yang ada
+        $allScopeNames = array_keys($this->scopedInstances);
+        foreach ($allScopeNames as $scopeName) {
+            $this->resetScope($scopeName);
+        }
+
+        // Buang semua singleton yang dapat dibuang
+        foreach ($this->disposableSingletons as $instance) {
+            if ($instance instanceof Disposable) {
+                $instance->dispose();
+            }
+        }
+        $this->singletons = [];
+        $this->disposableSingletons = [];
+
+        $this->events->fire('shutdown', $this);
+    }
+
+    /**
+     * Mengambil kontainer induk jika ada.
+     *
+     * @return ContainerInterface|null Kontainer induk atau null jika tidak ada.
+     */
+    public function getParent(): ?ContainerInterface
+    {
+        return $this->parentContainer;
+    }
+
+    /**
+     * Memastikan kontainer tidak disegel sebelum melakukan tindakan tertentu.
+     *
+     * @param string $action Deskripsi tindakan yang dicoba.
+     * @return void
+     * @throws ContainerException Jika kontainer disegel.
+     */
+    private function assertNotSealed(string $action): void
+    {
+        if ($this->isSealed) {
+            throw new ContainerException("Cannot {$action}. The container is sealed.");
+        }
+    }
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/Traits/LifecycleApiTrait.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/SecurityPolicy.php
+<?php
+
+namespace Core\Container;
+
+/**
+ * Kebijakan keamanan untuk kontainer yang mengontrol namespace terpercaya
+ * dan izin untuk closure anonim. Ini membantu mencegah injeksi kode yang tidak diinginkan.
+ *
+ * @package Core\Container
+ */
+class SecurityPolicy
+{
+    /**
+     * @var string[] Daftar namespace yang dianggap tepercaya.
+     */
+    private array $trustedNamespaces = [];
+
+    /**
+     * @var bool Menentukan apakah closure anonim diizinkan sebagai factory.
+     */
+    private bool $allowAnonymousClosures = false;
+
+    /**
+     * Menambahkan namespace tepercaya ke daftar.
+     *
+     * @param string $namespace Namespace yang akan ditambahkan (misalnya, 'App\Services').
+     * @return $this
+     */
+    public function addTrustedNamespace(string $namespace): self
+    {
+        $this->trustedNamespaces[] = rtrim($namespace, '\\') . '\\';
+        return $this;
+    }
+
+    /**
+     * Mengatur apakah closure anonim diizinkan sebagai factory.
+     *
+     * @param bool $allow True untuk mengizinkan, false untuk melarang (default).
+     * @return $this
+     */
+    public function allowAnonymousClosures(bool $allow = true): self
+    {
+        $this->allowAnonymousClosures = $allow;
+        return $this;
+    }
+
+    /**
+     * Memeriksa apakah callable atau string yang diberikan dianggap tepercaya
+     * berdasarkan kebijakan keamanan yang dikonfigurasi.
+     *
+     * @param callable|string $callable Callable atau nama kelas/metode.
+     * @return bool True jika tepercaya, false jika tidak.
+     */
+    public function isTrusted(callable|string $callable): bool
+    {
+        if ($callable instanceof \Closure) {
+            return $this->allowAnonymousClosures;
+        }
+
+        $className = null;
+
+        // Handle 'ClassName::methodName' string format
+        if (is_string($callable) && str_contains($callable, '::')) {
+            $callable = explode('::', $callable);
+        }
+
+        if (is_array($callable) && isset($callable[0]) && is_string($callable[0])) {
+            $className = $callable[0];
+        } elseif (is_string($callable) && class_exists($callable)) {
+            $className = $callable;
+        } elseif (is_object($callable) && !($callable instanceof \Closure)) {
+            $className = get_class($callable);
+        }
+
+        if ($className === null) {
+            return false; // Not a class-based callable or unsupported format
+        }
+
+        foreach ($this->trustedNamespaces as $ns) {
+            if (str_starts_with($className, $ns)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/SecurityPolicy.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/ConfigValidator.php
+<?php
+
+namespace Core\Container;
+
+use Psr\Log\LoggerInterface;
+
+/**
+ * Validator konfigurasi untuk memeriksa struktur dan integritas
+ * definisi binding kontainer.
+ *
+ * @package Core\Container
+ */
+class ConfigValidator
+{
+    /**
+     * @var array Daftar kesalahan validasi yang ditemukan.
+     */
+    private array $errors = [];
+
+    /**
+     * @var LoggerInterface Logger untuk mencatat pesan validasi.
+     */
+    public function __construct(private LoggerInterface $logger) {}
+
+    /**
+     * Memvalidasi array konfigurasi kontainer.
+     *
+     * @param array $config Array konfigurasi kontainer.
+     * @return bool True jika konfigurasi valid, false jika tidak.
+     */
+    public function validate(array $config): bool
+    {
+        $this->errors = [];
+        $this->validateBindings($config['service_definitions']['bindings'] ?? []);
+
+        foreach ($this->errors as $error) {
+            $this->logger->error("Configuration validation failed: " . $error);
+        }
+
+        return empty($this->errors);
+    }
+
+    /**
+     * Memvalidasi definisi binding individu.
+     *
+     * @param array $bindings Array definisi binding.
+     * @return void
+     */
+    private function validateBindings(array $bindings): void
+    {
+        $validKeys = ['factory', 'options', 'strict_type', 'expiry', 'tags', 'decorators'];
+
+        foreach ($bindings as $id => $definition) {
+            if (!is_array($definition)) {
+                $this->errors[] = "Binding definition for '{$id}' must be an array.";
+                continue;
+            }
+            if (!isset($definition['factory'])) {
+                $this->errors[] = "Missing required 'factory' key for binding ID: {$id}.";
+            }
+
+            $unknownKeys = array_diff(array_keys($definition), $validKeys);
+            if (!empty($unknownKeys)) {
+                $this->logger->warning("Unknown configuration keys found for binding '{$id}': " . implode(', ', $unknownKeys));
+            }
+        }
+    }
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/ConfigValidator.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/InMemoryBindingRegistry.php
+<?php
+
+namespace Core\Container;
+
+use Core\Container\Exceptions\CircularDependencyException;
+use Core\Container\Interfaces\BindingRegistry;
+
+/**
+ * Implementasi BindingRegistry berbasis memori.
+ * Menyimpan definisi binding, alias, tag, dekorator, tipe ketat, dan pengaturan kedaluwarsa.
+ *
+ * @package Core\Container
+ * @implements BindingRegistry
+ */
+class InMemoryBindingRegistry implements BindingRegistry
+{
+    /** @var array<string, array> Definisi binding. */
+    private array $bindings = [];
+    /** @var array<string, string> Alias layanan. */
+    private array $aliases = [];
+    /** @var array<string, array<string, bool>> Tag layanan. */
+    private array $tags = [];
+    /** @var array<string, callable[]> Dekorator layanan. */
+    private array $decorators = [];
+    /** @var array<string, string> Tipe ketat layanan. */
+    private array $strictTypes = [];
+    /** @var array<string, array{expire_at: int, ttl: int, sliding: bool}> Pengaturan kedaluwarsa layanan. */
+    private array $expiry = [];
+
+    /**
+     * Mengkloning instance registri.
+     * Memastikan array internal di-copy by value.
+     */
+    public function __clone()
+    {
+        $this->bindings = $this->bindings;
+        $this->aliases = $this->aliases;
+        $this->tags = $this->tags;
+        $this->decorators = $this->decorators;
+        $this->strictTypes = $this->strictTypes;
+        $this->expiry = $this->expiry;
+    }
+
+    /**
+     * Memastikan ID layanan valid (tidak kosong atau mengandung spasi).
+     *
+     * @param string $id ID layanan yang akan divalidasi.
+     * @throws \InvalidArgumentException Jika ID tidak valid.
+     * @return void
+     */
+    protected function assertValidId(string $id): void
+    {
+        if (trim($id) === '' || str_contains($id, ' ')) {
+            throw new \InvalidArgumentException("Invalid binding ID [$id]");
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function bind(string $id, array $definition): void
+    {
+        $this->assertValidId($id);
+        $this->bindings[$id] = $definition;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function unbind(string $id): bool
+    {
+        $existed = isset($this->bindings[$id]);
+        unset($this->bindings[$id], $this->decorators[$id], $this->strictTypes[$id], $this->expiry[$id]);
+        $this->untag($id); // Hapus semua tag yang terkait
+        return $existed;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getBinding(string $id): ?array
+    {
+        return $this->bindings[$this->resolveAlias($id)] ?? null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function hasBinding(string $id): bool
+    {
+        return isset($this->bindings[$this->resolveAlias($id)]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function resolveAlias(string $id): string
+    {
+        $seen = [];
+        while (isset($this->aliases[$id])) {
+            if (isset($seen[$id])) {
+                throw new CircularDependencyException("Circular alias detected for: $id");
+            }
+            $seen[$id] = true;
+            $id = $this->aliases[$id];
+        }
+        return $id;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function alias(string $id, string $target): void
+    {
+        $this->assertValidId($id);
+        $this->assertValidId($target);
+        $this->aliases[$id] = $target;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function removeAlias(string $alias): bool
+    {
+        $existed = isset($this->aliases[$alias]);
+        unset($this->aliases[$alias], $this->decorators[$alias], $this->strictTypes[$alias], $this->expiry[$alias]);
+        $this->untag($alias); // Hapus semua tag yang terkait
+        return $existed;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function tag(string $id, string $tag): void
+    {
+        $this->assertValidId($id);
+        if (!isset($this->tags[$tag])) {
+            $this->tags[$tag] = [];
+        }
+        $this->tags[$tag][$id] = true;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function untag(string $id, ?string $tag = null): void
+    {
+        if ($tag !== null) {
+            if (isset($this->tags[$tag][$id])) {
+                unset($this->tags[$tag][$id]);
+                if (empty($this->tags[$tag])) {
+                    unset($this->tags[$tag]);
+                }
+            }
+        } else {
+            foreach ($this->tags as $tagName => &$ids) {
+                if (isset($ids[$id])) {
+                    unset($ids[$id]);
+                    if (empty($ids)) {
+                        unset($this->tags[$tagName]);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function addDecorator(string $id, callable $decorator): void
+    {
+        $this->decorators[$id][] = $decorator;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDecorators(string $id): array
+    {
+        return $this->decorators[$this->resolveAlias($id)] ?? [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getByTag(string $tag): array
+    {
+        return array_keys($this->tags[$tag] ?? []);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setStrictType(string $id, string $type): void
+    {
+        $this->strictTypes[$id] = $type;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getStrictType(string $id): ?string
+    {
+        return $this->strictTypes[$id] ?? null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setExpiry(string $id, int $ttl, bool $sliding = false): void
+    {
+        $this->assertValidId($id);
+        $this->expiry[$id] = ['expire_at' => time() + $ttl, 'ttl' => $ttl, 'sliding' => $sliding];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getExpiry(string $id): ?array
+    {
+        return $this->expiry[$id] ?? null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function extendExpiryIfSliding(string $id): void
+    {
+        if (isset($this->expiry[$id]) && !empty($this->expiry[$id]['sliding'])) {
+            $this->expiry[$id]['expire_at'] = time() + $this->expiry[$id]['ttl'];
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function checkExpiry(string $id): bool
+    {
+        if (isset($this->expiry[$id]) && time() > $this->expiry[$id]['expire_at']) {
+            unset($this->bindings[$id], $this->expiry[$id], $this->decorators[$id], $this->strictTypes[$id]);
+            $this->untag($id); // Hapus semua tag yang terkait
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAllBindings(): array
+    {
+        return $this->bindings;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setAllBindings(array $bindings): void
+    {
+        $this->bindings = $bindings;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAllAliases(): array
+    {
+        return $this->aliases;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setAllAliases(array $aliases): void
+    {
+        $this->aliases = $aliases;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAllTags(): array
+    {
+        return $this->tags;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setAllTags(array $tags): void
+    {
+        $this->tags = $tags;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAllStrictTypes(): array
+    {
+        return $this->strictTypes;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setAllStrictTypes(array $strictTypes): void
+    {
+        $this->strictTypes = $strictTypes;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAllExpiry(): array
+    {
+        return $this->expiry;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setAllExpiry(array $expiry): void
+    {
+        $this->expiry = $expiry;
+    }
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/InMemoryBindingRegistry.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/DefaultEventDispatcher.php
+<?php
+
+namespace Core\Container;
+
+use Core\Container\Interfaces\EventDispatcher;
+
+/**
+ * Implementasi default dari EventDispatcher.
+ * Menyediakan fungsionalitas dasar untuk mendaftarkan dan memicu event.
+ *
+ * @package Core\Container
+ * @implements EventDispatcher
+ */
+class DefaultEventDispatcher implements EventDispatcher
+{
+    /**
+     * @var array<string, callable[]> Daftar listener event, diindeks berdasarkan nama event.
+     */
+    private array $listeners = [];
+
+    /**
+     * @inheritDoc
+     */
+    public function on(string $event, callable $cb): void
+    {
+        if (!is_callable($cb)) {
+            throw new \InvalidArgumentException("Listener for event '{$event}' must be callable.");
+        }
+        $this->listeners[$event][] = $cb;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function fire(string $event, ...$args): array
+    {
+        $results = [];
+        foreach ($this->listeners[$event] ?? [] as $cb) {
+            try {
+                $results[] = $cb(...$args);
+            } catch (\Throwable $e) {
+                // Logging error di sini bisa dilakukan jika ada logger yang diinjeksikan
+                // Untuk kesederhanaan, kita hanya mencatat kegagalan.
+                $results[] = false;
+            }
+        }
+        return $results;
+    }
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/DefaultEventDispatcher.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/DefaultMonitoring.php
+<?php
+
+namespace Core\Container;
+
+use Core\Container\Interfaces\Monitoring;
+
+/**
+ * Implementasi default dari Monitoring.
+ * Melacak statistik resolusi layanan, mendukung healthcheck, dan pusher metrik.
+ *
+ * @package Core\Container
+ * @implements Monitoring
+ */
+class DefaultMonitoring implements Monitoring
+{
+    /**
+     * @var array<string, array{count: int, total_time: float, avg_time: float, last_time: float|null, failures: int}> Statistik resolusi per ID layanan.
+     */
+    private array $resolveStats = [];
+
+    /**
+     * @var array<string, callable> Probe healthcheck per ID layanan.
+     */
+    private array $healthchecks = [];
+
+    /**
+     * @var callable[] Daftar callable untuk mendorong metrik.
+     */
+    private array $metricsPushers = [];
+
+    /**
+     * @var array<array{id: string, time_ms: float, memory_kb: float}> Log diagnostik resolusi layanan.
+     */
+    private array $resolutionLog = [];
+
+    /**
+     * @inheritDoc
+     */
+    public function recordResolve(string $id, float $start, bool $success, float $startMemory): void
+    {
+        $elapsed = microtime(true) - $start;
+        if (!isset($this->resolveStats[$id])) {
+            $this->resolveStats[$id] = ['count' => 0, 'total_time' => 0, 'avg_time' => 0, 'last_time' => null, 'failures' => 0];
+        }
+
+        $this->resolveStats[$id]['count']++;
+        $this->resolveStats[$id]['total_time'] += $elapsed;
+        $this->resolveStats[$id]['avg_time'] = $this->resolveStats[$id]['total_time'] / $this->resolveStats[$id]['count'];
+        $this->resolveStats[$id]['last_time'] = $elapsed;
+        if (!$success) {
+            $this->resolveStats[$id]['failures']++;
+        }
+
+        $this->pushMetrics($id, $this->resolveStats[$id]);
+        $this->resolutionLog[] = [
+            'id' => $id,
+            'time_ms' => $elapsed * 1000, // Waktu dalam milidetik
+            'memory_kb' => (memory_get_usage() - $startMemory) / 1024 // Perubahan memori dalam KB
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setHealthcheck(string $id, callable $probe): void
+    {
+        $this->healthchecks[$id] = $probe;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function checkHealth(string $id, mixed $instance): bool
+    {
+        try {
+            return !isset($this->healthchecks[$id]) || (bool)call_user_func($this->healthchecks[$id], $instance);
+        } catch (\Throwable $e) {
+            // Log the healthcheck failure if a logger is available
+            return false;
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function addMetricsPusher(callable $cb): void
+    {
+        $this->metricsPushers[] = $cb;
+    }
+
+    /**
+     * Mendorong metrik ke semua pusher yang terdaftar.
+     *
+     * @param string $id ID layanan.
+     * @param array $stats Statistik resolusi layanan.
+     * @return void
+     */
+    private function pushMetrics(string $id, array $stats): void
+    {
+        foreach ($this->metricsPushers as $cb) {
+            $cb($id, $stats);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function dumpResolveStats(string $sort = null): array
+    {
+        $stats = $this->resolveStats;
+        if ($sort && isset(reset($stats)[$sort])) {
+            uasort($stats, fn($a, $b) => $b[$sort] <=> $a[$sort]);
+        }
+        return $stats;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getResolveStats(string $id): array
+    {
+        return $this->resolveStats[$id] ?? ['count' => 0, 'total_time' => 0, 'avg_time' => 0, 'last_time' => null, 'failures' => 0];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDiagnostics(): array
+    {
+        return $this->resolutionLog;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function clearDiagnostics(): void
+    {
+        $this->resolutionLog = [];
+    }
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/DefaultMonitoring.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/DefaultSnapshotManager.php
+<?php
+
+namespace Core\Container;
+
+use Core\Container\Interfaces\SnapshotManager;
+use Core\Container\NextLevelContainer;
+
+/**
+ * Implementasi default dari SnapshotManager.
+ * Mengelola ekspor, impor, dan diff status kontainer atau tenant menggunakan JSON.
+ *
+ * @package Core\Container
+ * @implements SnapshotManager
+ */
+class DefaultSnapshotManager implements SnapshotManager
+{
+    /**
+     * @inheritDoc
+     */
+    public function export(array $state, ?string $file = null): ?string
+    {
+        $json = json_encode($state, JSON_PRETTY_PRINT);
+        if ($file) {
+            file_put_contents($file, $json);
+            return null;
+        }
+        return $json;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function import(string|array $data): array
+    {
+        if (is_string($data) && file_exists($data)) {
+            $data = file_get_contents($data);
+        }
+        return is_array($data) ? $data : json_decode($data, true);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function diff(array $a, array $b): array
+    {
+        return [
+            'added' => array_diff_key($b, $a),
+            'removed' => array_diff_key($a, $b),
+            'changed' => array_diff_assoc($b, $a) // Hanya mendeteksi perubahan nilai pada kunci yang sama
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function exportTenants(array $tenants): array
+    {
+        $snapshots = [];
+        foreach ($tenants as $tid => $tenant) {
+            if ($tenant instanceof NextLevelContainer) {
+                $snapshots[$tid] = $tenant->exportSnapshotArray();
+            } else {
+                $snapshots[$tid] = null; // Atau tangani tipe tenant lain sesuai kebutuhan
+            }
+        }
+        return $snapshots;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function importTenants(array $snaps, callable $factory): array
+    {
+        $tenants = [];
+        foreach ($snaps as $tid => $snap) {
+            $tenant = $factory();
+            if ($tenant instanceof NextLevelContainer) {
+                $tenant->importSnapshotArray($snap);
+            }
+            $tenants[$tid] = $tenant;
+        }
+        return $tenants;
+    }
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/DefaultSnapshotManager.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/DefaultSecretManager.php
+<?php
+
+namespace Core\Container;
+
+use Core\Container\Interfaces\SecretManager;
+
+/**
+ * Implementasi default dari SecretManager.
+ * Menyimpan provider untuk rahasia, bukan nilai rahasia itu sendiri.
+ *
+ * @package Core\Container
+ * @implements SecretManager
+ */
+class DefaultSecretManager implements SecretManager
+{
+    /**
+     * @var array<string, array{0: string, 1: callable}> Daftar rahasia yang terikat: ID => [key, provider].
+     */
+    private array $secrets = [];
+
+    /**
+     * @inheritDoc
+     */
+    public function bindSecret(string $id, string $key, callable $provider): void
+    {
+        $this->secrets[$id] = [$key, $provider];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSecret(string $id): mixed
+    {
+        try {
+            return isset($this->secrets[$id]) ? call_user_func($this->secrets[$id][1], $this->secrets[$id][0]) : null;
+        } catch (\Throwable $e) {
+            // Log the error if a logger is available
+            return null;
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function hasSecret(string $id): bool
+    {
+        return isset($this->secrets[$id]);
+    }
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/DefaultSecretManager.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/DefaultContextManager.php
+<?php
+
+namespace Core\Container;
+
+use Core\Container\Interfaces\ContextManager;
+use Psr\Container\ContainerInterface;
+
+/**
+ * Implementasi default dari ContextManager.
+ * Mengelola stack konteks, binding dinamis, dan instance tenant.
+ *
+ * @package Core\Container
+ * @implements ContextManager
+ */
+class DefaultContextManager implements ContextManager
+{
+    /**
+     * @var array<array<string, mixed>> Stack konteks.
+     */
+    private array $contextStack = [];
+
+    /**
+     * @var array<string, callable> Binding dinamis (ID => resolver callable).
+     */
+    private array $dynamicBindings = [];
+
+    /**
+     * @var array<string, mixed> Instance tenant yang di-cache.
+     */
+    private array $tenants = [];
+
+    /**
+     * Mengkloning instance manajer konteks.
+     * Memastikan array internal di-copy by value.
+     */
+    public function __clone()
+    {
+        $this->contextStack = $this->contextStack;
+        $this->dynamicBindings = $this->dynamicBindings;
+        $this->tenants = $this->tenants;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function push(array $ctx): void
+    {
+        $this->contextStack[] = $ctx;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function pop(): void
+    {
+        array_pop($this->contextStack);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function current(): array
+    {
+        return end($this->contextStack) ?: [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function bindDynamic(string $id, callable $resolver): void
+    {
+        $this->dynamicBindings[$id] = $resolver;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function resolveDynamic(string $id, ContainerInterface $container): mixed
+    {
+        if (!isset($this->dynamicBindings[$id])) {
+            return null;
+        }
+        $ctx = $this->current();
+        if (!$ctx) {
+            return null;
+        }
+        try {
+            return $this->dynamicBindings[$id]($ctx, $container);
+        } catch (\Throwable $e) {
+            // Log the error if a logger is available
+            return null;
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function forTenant(string $tenantId, callable $factory): mixed
+    {
+        $key = '__tenant__' . $tenantId;
+        if (!isset($this->tenants[$key])) {
+            $this->tenants[$key] = $factory();
+        }
+        return $this->tenants[$key];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getTenants(): array
+    {
+        return $this->tenants;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setTenants(array $tenants): void
+    {
+        $this->tenants = $tenants;
+    }
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/DefaultContextManager.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/DefaultDocGenerator.php
+<?php
+
+namespace Core\Container;
+
+use Core\Container\Interfaces\DocGenerator;
+
+/**
+ * Implementasi default dari DocGenerator.
+ * Menghasilkan dokumentasi dasar untuk binding kontainer dalam format Markdown atau JSON.
+ *
+ * @package Core\Container
+ * @implements DocGenerator
+ */
+class DefaultDocGenerator implements DocGenerator
+{
+    /**
+     * @inheritDoc
+     */
+    public function generate(array $bindings, array $tags = [], string $format = 'markdown'): string
+    {
+        $lines = [];
+        foreach ($bindings as $id => $b) {
+            // Escape Markdown special characters in ID
+            $idEsc = str_replace(['*', '_'], ['\\*', '\\_'], $id);
+
+            $associatedTags = [];
+            foreach ($tags as $tagName => $idsInTag) {
+                if (isset($idsInTag[$id])) {
+                    $associatedTags[] = $tagName;
+                }
+            }
+            $tagStr = implode(', ', $associatedTags);
+
+            $lines[] = "- **{$idEsc}**" . ($tagStr ? " _(tags: {$tagStr})_" : "");
+        }
+
+        if ($format === 'markdown') {
+            return implode("\n", $lines);
+        } elseif ($format === 'json') {
+            return json_encode($lines, JSON_PRETTY_PRINT);
+        }
+        // Default ke markdown jika format tidak dikenal
+        return implode("\n", $lines);
+    }
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/DefaultDocGenerator.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/AllowAllPolicy.php
+<?php
+
+namespace Core\Container;
+
+use Core\Container\Interfaces\DelegationPolicy;
+use Psr\Container\ContainerInterface;
+
+/**
+ * Implementasi default dari DelegationPolicy yang selalu mengizinkan
+ * delegasi resolusi layanan ke kontainer induk.
+ *
+ * @package Core\Container
+ * @implements DelegationPolicy
+ */
+class AllowAllPolicy implements DelegationPolicy
+{
+    /**
+     * @inheritDoc
+     */
+    public function canDelegate(string $id, ContainerInterface $child, ContainerInterface $parent): bool
+    {
+        return true;
+    }
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/AllowAllPolicy.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/RuleValidator.php
+<?php
+
+namespace Core\Container;
+
+use Core\Container\Interfaces\ArchitecturalRule;
+use Core\Container\Exceptions\ContainerException;
+
+/**
+ * Validator yang menerapkan serangkaian ArchitecturalRule pada semua binding kontainer.
+ *
+ * @package Core\Container
+ */
+class RuleValidator
+{
+    /**
+     * @var ArchitecturalRule[] Daftar aturan arsitektur yang akan diterapkan.
+     */
+    public function __construct(private array $rules) {}
+
+    /**
+     * Memvalidasi semua binding yang diberikan terhadap semua aturan yang terdaftar.
+     *
+     * @param array $bindings Semua definisi binding dari registri.
+     * @return void
+     * @throws ContainerException Jika ada aturan arsitektur yang dilanggar.
+     */
+    public function validateAll(array $bindings): void
+    {
+        foreach ($this->rules as $rule) {
+            foreach ($bindings as $id => $binding) {
+                // Setiap aturan bertanggung jawab untuk melemparkan pengecualiannya sendiri
+                // jika ada pelanggaran.
+                $rule->validate($id, $binding, $bindings);
+            }
+        }
+    }
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/RuleValidator.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/NextLevelContainer.php
+<?php
+
+namespace Core\Container;
+
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use Core\Container\Interfaces\BindingRegistry;
+use Core\Container\Interfaces\Monitoring;
+use Core\Container\Interfaces\EventDispatcher;
+use Core\Container\Interfaces\SnapshotManager;
+use Core\Container\Interfaces\SecretManager;
+use Core\Container\Interfaces\ContextManager;
+use Core\Container\Interfaces\DocGenerator;
+use Core\Container\Interfaces\ContainerExtension;
+use Core\Container\Interfaces\DelegationPolicy;
+use Core\Container\Traits\BindingApiTrait;
+use Core\Container\Traits\ExecutionApiTrait;
+use Core\Container\Traits\LifecycleApiTrait;
+
+/**
+ * NextLevelContainer adalah implementasi Container Inversi Kontrol (IoC) yang canggih
+ * dan berkinerja tinggi, menyediakan fitur-fitur seperti manajemen siklus hidup,
+ * monitoring, snapshotting, manajemen rahasia, multi-tenancy, dan validasi arsitektur.
+ *
+ * Kontainer ini mendukung berbagai metode binding dan resolusi, termasuk autowiring,
+ * injeksi berdasarkan atribut, dan injeksi berdasarkan tag.
+ *
+ * @package Core\Container
+ * @implements ContainerInterface
+ */
+class NextLevelContainer implements ContainerInterface
+{
+    use BindingApiTrait, ExecutionApiTrait, LifecycleApiTrait;
+
+    /**
+     * @var BindingRegistry Registri untuk mengelola semua binding layanan dan alias.
+     */
+    protected BindingRegistry $registry;
+
+    /**
+     * @var Monitoring Sistem monitoring untuk melacak metrik resolusi dan kesehatan layanan.
+     */
+    protected Monitoring $monitor;
+
+    /**
+     * @var EventDispatcher Dispatcher peristiwa untuk menerbitkan dan mendengarkan peristiwa kontainer.
+     */
+    protected EventDispatcher $events;
+
+    /**
+     * @var SnapshotManager Manajer untuk mengelola snapshot status kontainer.
+     */
+    protected SnapshotManager $snapshot;
+
+    /**
+     * @var SecretManager Manajer untuk mengelola rahasia dan kredensial.
+     */
+    protected SecretManager $secrets;
+
+    /**
+     * @var ContextManager Manajer untuk mengelola konteks aplikasi dan binding dinamis.
+     */
+    protected ContextManager $context;
+
+    /**
+     * @var DocGenerator Generator dokumentasi untuk binding kontainer.
+     */
+    protected DocGenerator $doc;
+
+    /**
+     * @var LoggerInterface Logger untuk mencatat pesan dan kesalahan.
+     */
+    protected LoggerInterface $logger;
+
+    /**
+     * @var ContainerExtension[] Array ekstensi kontainer yang terdaftar.
+     */
+    protected array $extensions = [];
+
+    /**
+     * @var bool Menentukan apakah penulisan ulang binding diizinkan atau tidak.
+     */
+    private bool $strictOverwrite;
+
+    /**
+     * @var ContainerInterface|null Kontainer induk jika kontainer ini merupakan turunan.
+     */
+    private ?ContainerInterface $parentContainer = null;
+
+    /**
+     * @var DelegationPolicy|null Kebijakan yang menentukan apakah resolusi dapat didelegasikan ke kontainer induk.
+     */
+    private ?DelegationPolicy $delegationPolicy = null;
+
+    /**
+     * Membuat instance baru dari NextLevelContainer.
+     *
+     * @param BindingRegistry $registry Implementasi registri binding.
+     * @param Monitoring $monitor Implementasi sistem monitoring.
+     * @param EventDispatcher $events Implementasi dispatcher peristiwa.
+     * @param SnapshotManager $snapshot Implementasi manajer snapshot.
+     * @param SecretManager $secrets Implementasi manajer rahasia.
+     * @param ContextManager $context Implementasi manajer konteks.
+     * @param DocGenerator $doc Implementasi generator dokumentasi.
+     * @param LoggerInterface $logger Implementasi logger.
+     * @param ContainerExtension[] $extensions Array ekstensi kontainer.
+     * @param bool $strictOverwrite Jika true, binding yang sudah ada tidak dapat ditimpa.
+     * @param ContainerInterface|null $parentContainer Kontainer induk untuk delegasi.
+     * @param DelegationPolicy|null $delegationPolicy Kebijakan delegasi ke kontainer induk.
+     */
+    public function __construct(
+        BindingRegistry $registry,
+        Monitoring $monitor,
+        EventDispatcher $events,
+        SnapshotManager $snapshot,
+        SecretManager $secrets,
+        ContextManager $context,
+        DocGenerator $doc,
+        LoggerInterface $logger,
+        array $extensions = [],
+        bool $strictOverwrite = false,
+        ?ContainerInterface $parentContainer = null,
+        ?DelegationPolicy $delegationPolicy = null
+    ) {
+        $this->registry = $registry;
+        $this->monitor = $monitor;
+        $this->events = $events;
+        $this->snapshot = $snapshot;
+        $this->secrets = $secrets;
+        $this->context = $context;
+        $this->doc = $doc;
+        $this->logger = $logger;
+        $this->extensions = $extensions;
+        $this->strictOverwrite = $strictOverwrite;
+        $this->parentContainer = $parentContainer;
+        $this->delegationPolicy = $delegationPolicy ?? new AllowAllPolicy();
+    }
+
+    /**
+     * Mengkloning instance kontainer.
+     * Singletons dan instance scoped direset, dan manajer internal dikloning secara dangkal.
+     */
+    public function __clone()
+    {
+        $this->singletons = [];
+        $this->disposableSingletons = [];
+        $this->scopedInstances = [];
+        $this->disposableScopedInstances = [];
+        $this->registry = clone $this->registry;
+        $this->context = clone $this->context;
+        $this->secrets = clone $this->secrets;
+    }
+
+    /**
+     * Menetapkan probe healthcheck untuk layanan tertentu.
+     *
+     * @param string $id ID layanan.
+     * @param callable $probe Callable yang melakukan pemeriksaan kesehatan. Harus mengembalikan boolean.
+     * @return void
+     */
+    public function setHealthcheck(string $id, callable $probe): void
+    {
+        $this->monitor->setHealthcheck($id, $probe);
+    }
+
+    /**
+     * Menambahkan pusher metrik khusus yang akan dipanggil saat metrik resolusi diperbarui.
+     *
+     * @param callable $cb Callback yang akan menerima ID layanan dan statistik resolusi.
+     * @return void
+     */
+    public function addMetricsPusher(callable $cb): void
+    {
+        $this->monitor->addMetricsPusher($cb);
+    }
+
+    /**
+     * Mendaftarkan listener untuk event kontainer tertentu.
+     *
+     * @param string $event Nama event (misalnya, 'bind', 'resolve').
+     * @param callable $cb Callback listener.
+     * @return void
+     */
+    public function onEvent(string $event, callable $cb): void
+    {
+        $this->events->on($event, $cb);
+    }
+
+    /**
+     * Mengambil statistik resolusi untuk layanan tertentu.
+     *
+     * @param string $id ID layanan.
+     * @return array Statistik resolusi (count, total_time, avg_time, dll.).
+     */
+    public function getResolveStats(string $id): array
+    {
+        return $this->monitor->getResolveStats($id);
+    }
+
+    /**
+     * Mendump semua statistik resolusi.
+     *
+     * @param string|null $sort Kunci untuk mengurutkan hasil (misalnya, 'total_time', 'count').
+     * @return array Semua statistik resolusi, diurutkan jika ditentukan.
+     */
+    public function dumpResolveStats(string $sort = null): array
+    {
+        return $this->monitor->dumpResolveStats($sort);
+    }
+
+    /**
+     * Mendump status kesehatan semua layanan yang terikat.
+     *
+     * @return array Array asosiatif dari ID layanan ke status kesehatannya.
+     */
+    public function dumpHealthStatus(): array
+    {
+        $allBoundIds = array_keys($this->registry->getAllBindings());
+        $result = [];
+        foreach ($allBoundIds as $id) {
+            try {
+                $instance = $this->get($id);
+                $result[$id] = ['status' => $this->monitor->checkHealth($id, $instance)];
+            } catch (\Throwable $e) {
+                $result[$id] = ['status' => false, 'error' => $e->getMessage()];
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Mengambil log diagnostik resolusi layanan.
+     *
+     * @return array Log resolusi.
+     */
+    public function getDiagnostics(): array
+    {
+        return $this->monitor->getDiagnostics();
+    }
+
+    /**
+     * Membersihkan log diagnostik resolusi layanan.
+     *
+     * @return void
+     */
+    public function clearDiagnostics(): void
+    {
+        $this->monitor->clearDiagnostics();
+    }
+
+    /**
+     * Mendorong konteks baru ke dalam stack konteks.
+     *
+     * @param array $ctx Konteks yang akan didorong.
+     * @return void
+     */
+    public function pushContext(array $ctx): void
+    {
+        $this->context->push($ctx);
+    }
+
+    /**
+     * Mengeluarkan konteks dari stack konteks.
+     *
+     * @return void
+     */
+    public function popContext(): void
+    {
+        $this->context->pop();
+    }
+
+    /**
+     * Mengambil instance kontainer yang dikloning untuk tenant tertentu.
+     * Instance kontainer dikloning untuk setiap tenant untuk mengisolasi binding dan instance.
+     *
+     * @param string $tenantId ID tenant.
+     * @return self Instance kontainer untuk tenant.
+     */
+    public function forTenant(string $tenantId): self
+    {
+        return $this->context->forTenant($tenantId, fn() => clone $this);
+    }
+
+    /**
+     * Mengekspor status kontainer saat ini ke file JSON.
+     *
+     * @param string $file Path file untuk menyimpan snapshot.
+     * @return void
+     * @throws Exceptions\ContainerException Jika data snapshot tidak dapat diekspor.
+     */
+    public function exportSnapshot(string $file): void
+    {
+        $state = $this->exportSnapshotArray();
+        $this->snapshot->export($state, $file);
+    }
+
+    /**
+     * Mengimpor status kontainer dari file JSON.
+     *
+     * @param string $file Path file snapshot untuk diimpor.
+     * @return void
+     * @throws Exceptions\ContainerException Jika data snapshot tidak valid atau tidak dapat diimpor.
+     */
+    public function importSnapshot(string $file): void
+    {
+        $state = $this->snapshot->import($file);
+        $this->importSnapshotArray($state);
+    }
+
+    /**
+     * Mengekspor status kontainer saat ini sebagai array.
+     *
+     * @return array Array representasi status kontainer.
+     */
+    public function exportSnapshotArray(): array
+    {
+        return [
+            'bindings' => $this->registry->getAllBindings(),
+            'singletons' => $this->singletons,
+            'aliases' => $this->registry->getAllAliases(),
+            'tags' => $this->registry->getAllTags(),
+            'strictTypes' => $this->registry->getAllStrictTypes(),
+            'expiry' => $this->registry->getAllExpiry(),
+            'tenants' => $this->snapshot->exportTenants($this->context->getTenants())
+        ];
+    }
+
+    /**
+     * Mengimpor status kontainer dari array.
+     *
+     * @param array $state Array yang berisi status kontainer.
+     * @return void
+     * @throws Exceptions\ContainerException Jika data snapshot tidak valid.
+     */
+    public function importSnapshotArray(array $state): void
+    {
+        if (!is_array($state)) {
+            throw new Exceptions\ContainerException("Snapshot data must be an array.");
+        }
+        if (isset($state['bindings']) && is_array($state['bindings'])) {
+            $this->registry->setAllBindings($state['bindings']);
+        }
+        if (isset($state['singletons']) && is_array($state['singletons'])) {
+            $this->singletons = $state['singletons'];
+        }
+        if (isset($state['aliases']) && is_array($state['aliases'])) {
+            $this->registry->setAllAliases($state['aliases']);
+        }
+        if (isset($state['tags']) && is_array($state['tags'])) {
+            $this->registry->setAllTags($state['tags']);
+        }
+        if (isset($state['strictTypes']) && is_array($state['strictTypes'])) {
+            $this->registry->setAllStrictTypes($state['strictTypes']);
+        }
+        if (isset($state['expiry']) && is_array($state['expiry'])) {
+            $this->registry->setAllExpiry($state['expiry']);
+        }
+        if (isset($state['tenants']) && is_array($state['tenants'])) {
+            $this->context->setTenants($this->snapshot->importTenants($state['tenants'], fn() => clone $this));
+        }
+    }
+
+    /**
+     * Membandingkan status kontainer ini dengan kontainer lain dan mengembalikan perbedaannya.
+     *
+     * @param NextLevelContainer $other Kontainer lain untuk dibandingkan.
+     * @return array Array yang menunjukkan perbedaan (added, removed, changed).
+     */
+    public function diffWith(NextLevelContainer $other): array
+    {
+        return $this->snapshot->diff($this->exportSnapshotArray(), $other->exportSnapshotArray());
+    }
+
+    /**
+     * Menghasilkan dokumentasi untuk binding kontainer.
+     *
+     * @param string $format Format output dokumentasi (misalnya, 'markdown', 'json').
+     * @return string Dokumentasi yang dihasilkan.
+     */
+    public function generateDocs(string $format = 'markdown'): string
+    {
+        return $this->doc->generate($this->registry->getAllBindings(), $this->registry->getAllTags(), $format);
+    }
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/NextLevelContainer.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/ContainerBuilder.php
+<?php
+
+namespace Core\Container;
+
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use Core\Container\Exceptions\ContainerException;
+use Core\Container\Interfaces\ArchitecturalRule;
+use Core\Container\Interfaces\BindingRegistry;
+use Core\Container\Interfaces\ContainerExtension;
+use Core\Container\Interfaces\ContextManager;
+use Core\Container\Interfaces\DelegationPolicy;
+use Core\Container\Interfaces\DocGenerator;
+use Core\Container\Interfaces\EventDispatcher;
+use Core\Container\Interfaces\Monitoring;
+use Core\Container\Interfaces\SecretManager;
+use Throwable;
+
+/**
+ * ContainerBuilder adalah kelas pembangun (builder) yang memfasilitasi
+ * konfigurasi dan konstruksi instance NextLevelContainer.
+ * Ini memungkinkan konfigurasi yang fleksibel dan terpisah dari logika kontainer inti.
+ *
+ * @package Core\Container
+ */
+class ContainerBuilder
+{
+    /** @var BindingRegistry|null Registri binding yang akan digunakan. */
+    private ?BindingRegistry $registry = null;
+    /** @var Monitoring|null Sistem monitoring yang akan digunakan. */
+    private ?Monitoring $monitor = null;
+    /** @var EventDispatcher|null Dispatcher peristiwa yang akan digunakan. */
+    private ?EventDispatcher $events = null;
+    /** @var SnapshotManager|null Manajer snapshot yang akan digunakan. */
+    private ?SnapshotManager $snapshot = null;
+    /** @var SecretManager|null Manajer rahasia yang akan digunakan. */
+    private ?SecretManager $secrets = null;
+    /** @var ContextManager|null Manajer konteks yang akan digunakan. */
+    private ?ContextManager $context = null;
+    /** @var DocGenerator|null Generator dokumentasi yang akan digunakan. */
+    private ?DocGenerator $doc = null;
+    /** @var ContainerExtension[] Daftar ekstensi kontainer yang akan didaftarkan. */
+    private array $extensions = [];
+    /** @var ArchitecturalRule[] Daftar aturan arsitektur yang akan divalidasi. */
+    private array $rules = [];
+    /** @var LoggerInterface|null Logger yang akan digunakan. */
+    private ?LoggerInterface $logger = null;
+    /** @var bool Menentukan apakah penulisan ulang binding diizinkan dalam mode ketat. */
+    private bool $strictOverwrite = false;
+    /** @var ContainerInterface|null Kontainer induk jika kontainer ini adalah anak. */
+    private ?ContainerInterface $parentContainer = null;
+    /** @var DelegationPolicy|null Kebijakan delegasi ke kontainer induk. */
+    private ?DelegationPolicy $delegationPolicy = null;
+    /** @var SecurityPolicy|null Kebijakan keamanan untuk kontainer. */
+    private ?SecurityPolicy $securityPolicy = null;
+
+    /**
+     * Menetapkan implementasi BindingRegistry.
+     *
+     * @param BindingRegistry $registry Implementasi BindingRegistry.
+     * @return $this
+     */
+    public function withBindingRegistry(BindingRegistry $registry): self
+    {
+        $this->registry = $registry;
+        return $this;
+    }
+
+    /**
+     * Menetapkan implementasi Monitoring.
+     *
+     * @param Monitoring $monitor Implementasi Monitoring.
+     * @return $this
+     */
+    public function withMonitoring(Monitoring $monitor): self
+    {
+        $this->monitor = $monitor;
+        return $this;
+    }
+
+    /**
+     * Menetapkan implementasi EventDispatcher.
+     *
+     * @param EventDispatcher $events Implementasi EventDispatcher.
+     * @return $this
+     */
+    public function withEventDispatcher(EventDispatcher $events): self
+    {
+        $this->events = $events;
+        return $this;
+    }
+
+    /**
+     * Menetapkan implementasi SnapshotManager.
+     *
+     * @param SnapshotManager $snapshot Implementasi SnapshotManager.
+     * @return $this
+     */
+    public function withSnapshotManager(SnapshotManager $snapshot): self
+    {
+        $this->snapshot = $snapshot;
+        return $this;
+    }
+
+    /**
+     * Menetapkan implementasi SecretManager.
+     *
+     * @param SecretManager $secrets Implementasi SecretManager.
+     * @return $this
+     */
+    public function withSecretManager(SecretManager $secrets): self
+    {
+        $this->secrets = $secrets;
+        return $this;
+    }
+
+    /**
+     * Menetapkan implementasi ContextManager.
+     *
+     * @param ContextManager $context Implementasi ContextManager.
+     * @return $this
+     */
+    public function withContextManager(ContextManager $context): self
+    {
+        $this->context = $context;
+        return $this;
+    }
+
+    /**
+     * Menetapkan implementasi DocGenerator.
+     *
+     * @param DocGenerator $doc Implementasi DocGenerator.
+     * @return $this
+     */
+    public function withDocGenerator(DocGenerator $doc): self
+    {
+        $this->doc = $doc;
+        return $this;
+    }
+
+    /**
+     * Menambahkan ekstensi kontainer.
+     *
+     * @param ContainerExtension $extension Instance ekstensi yang akan ditambahkan.
+     * @return $this
+     */
+    public function withExtension(ContainerExtension $extension): self
+    {
+        $this->extensions[] = $extension;
+        return $this;
+    }
+
+    /**
+     * Menambahkan aturan arsitektur untuk validasi.
+     *
+     * @param ArchitecturalRule $rule Instance aturan arsitektur.
+     * @return $this
+     */
+    public function withArchitecturalRule(ArchitecturalRule $rule): self
+    {
+        $this->rules[] = $rule;
+        return $this;
+    }
+
+    /**
+     * Menetapkan logger untuk kontainer.
+     *
+     * @param LoggerInterface $logger Implementasi LoggerInterface.
+     * @return $this
+     */
+    public function withLogger(LoggerInterface $logger): self
+    {
+        $this->logger = $logger;
+        return $this;
+    }
+
+    /**
+     * Mengatur mode penulisan ulang ketat untuk binding.
+     * Jika diaktifkan, binding yang sudah ada tidak dapat ditimpa.
+     *
+     * @param bool $strict True untuk mengaktifkan mode ketat, false untuk menonaktifkan.
+     * @return $this
+     */
+    public function withStrictOverwrite(bool $strict = true): self
+    {
+        $this->strictOverwrite = $strict;
+        return $this;
+    }
+
+    /**
+     * Menetapkan kebijakan keamanan untuk kontainer.
+     *
+     * @param SecurityPolicy $policy Instance SecurityPolicy.
+     * @return $this
+     */
+    public function withSecurityPolicy(SecurityPolicy $policy): self
+    {
+        $this->securityPolicy = $policy;
+        return $this;
+    }
+
+    /**
+     * Menetapkan kontainer induk untuk delegasi.
+     * Mencegah hierarki kontainer melingkar.
+     *
+     * @param ContainerInterface $parent Kontainer induk.
+     * @param DelegationPolicy|null $policy Kebijakan delegasi. Jika null, AllowAllPolicy akan digunakan.
+     * @return $this
+     * @throws ContainerException Jika hierarki kontainer melingkar terdeteksi.
+     */
+    public function withParent(ContainerInterface $parent, ?DelegationPolicy $policy = null): self
+    {
+        $p = $parent;
+        while ($p !== null) {
+            if ($p === $this) {
+                throw new ContainerException("Circular container hierarchy detected.");
+            }
+            // Asumsi kontainer induk juga memiliki metode getParent()
+            $p = method_exists($p, 'getParent') ? $p->getParent() : null;
+        }
+        $this->parentContainer = $parent;
+        $this->delegationPolicy = $policy;
+        return $this;
+    }
+
+    /**
+     * Membangun dan mengembalikan instance NextLevelContainer berdasarkan konfigurasi builder.
+     * Menginisialisasi komponen default jika tidak disediakan dan menjalankan validasi aturan arsitektur.
+     *
+     * @return NextLevelContainer Instance kontainer yang telah dibangun.
+     * @throws ContainerException Jika validasi aturan arsitektur gagal atau pendaftaran ekstensi gagal.
+     */
+    public function build(): NextLevelContainer
+    {
+        // Inisialisasi komponen default jika tidak disediakan
+        $registry = $this->registry ?? new InMemoryBindingRegistry();
+        $monitor = $this->monitor ?? new DefaultMonitoring();
+        $events = $this->events ?? new DefaultEventDispatcher();
+        $snapshot = $this->snapshot ?? new DefaultSnapshotManager();
+        $secrets = $this->secrets ?? new DefaultSecretManager();
+        $context = $this->context ?? new DefaultContextManager();
+        $doc = $this->doc ?? new DefaultDocGenerator();
+        $logger = $this->logger ?? new NullLogger(); // Menggunakan NullLogger jika tidak ada logger yang diberikan
+
+        // Jalankan validasi aturan arsitektur jika ada aturan yang terdaftar
+        if (!empty($this->rules)) {
+            $validator = new RuleValidator($this->rules);
+            try {
+                $validator->validateAll($registry->getAllBindings());
+            } catch (Throwable $e) {
+                $logger->critical('Architectural rule validation failed during build: ' . $e->getMessage(), ['exception' => $e]);
+                throw new ContainerException("Container build failed due to architectural rule violation.", 0, $e);
+            }
+        }
+
+        // Buat instance kontainer utama
+        $container = new NextLevelContainer(
+            $registry, $monitor, $events, $snapshot, $secrets, $context,
+            $doc, $logger, $this->extensions, $this->strictOverwrite,
+            $this->parentContainer, $this->delegationPolicy
+        );
+
+        // Daftarkan ekstensi ke kontainer yang baru dibuat
+        foreach ($this->extensions as $extension) {
+            try {
+                $extension->register($container, $this);
+            } catch (Throwable $e) {
+                $logger->critical('Extension registration failed', ['extension' => get_class($extension), 'error' => $e->getMessage()]);
+                throw new ContainerException('Extension ' . get_class($extension) . ' failed to register: ' . $e->getMessage(), 0, $e);
+            }
+        }
+
+        return $container;
+    }
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/ContainerBuilder.php ========
+
+// source: /storage/emulated/0/PHP-PROJECT/Core/Container/ContainerFactory.php
+<?php
+
+namespace Core\Container;
+
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use Core\Container\Exceptions\ContainerException;
+use Core\Container\Interfaces\ArchitecturalRule;
+use Core\Container\Interfaces\BindingRegistry;
+use Core\Container\Interfaces\ContextManager;
+use Core\Container\Interfaces\DelegationPolicy;
+use Core\Container\Interfaces\DocGenerator;
+use Core\Container\Interfaces\EventDispatcher;
+use Core\Container\Interfaces\Monitoring;
+use Core\Container\Interfaces\SecretManager;
+use ReflectionClass;
+use Throwable;
+
+/**
+ * ContainerFactory menyediakan metode statis untuk membuat instance NextLevelContainer
+ * dari array konfigurasi. Ini adalah titik masuk utama untuk menginisialisasi kontainer.
+ *
+ * @package Core\Container
+ */
+class ContainerFactory
+{
+    /**
+     * Membuat instance NextLevelContainer dari array konfigurasi yang diberikan.
+     *
+     * @param array $config Array konfigurasi untuk kontainer.
+     * @param ContainerInterface|null $parentContainer Kontainer induk opsional jika membuat kontainer anak.
+     * @return NextLevelContainer Instance kontainer yang telah dikonfigurasi.
+     * @throws ContainerException Jika konfigurasi gagal validasi atau ada masalah dalam pembangunan.
+     */
+    public static function create(array $config, ?ContainerInterface $parentContainer = null): NextLevelContainer
+    {
+        $builder = new ContainerBuilder();
+        $logger = new NullLogger(); // Logger sementara, akan diganti jika dikonfigurasi
+        $securityPolicy = new SecurityPolicy();
+
+        $coreSettings = $config['core_settings'] ?? [];
+
+        // Konfigurasi strict overwrite
+        $builder->withStrictOverwrite($coreSettings['strict_overwrite'] ?? false);
+
+        // Konfigurasi logger
+        if (isset($coreSettings['logger_class']) && class_exists($coreSettings['logger_class'])) {
+            try {
+                $logger = new $coreSettings['logger_class']();
+            } catch (Throwable $e) {
+                // Jika logger kustom gagal diinisialisasi, gunakan NullLogger dan log peringatan
+                error_log("Failed to initialize custom logger '{$coreSettings['logger_class']}': " . $e->getMessage());
+                $logger = new NullLogger();
+            }
+        }
+        $builder->withLogger($logger);
+
+        // Konfigurasi kebijakan keamanan
+        $securityConfig = $coreSettings['security_policy'] ?? [];
+        foreach ($securityConfig['trusted_namespaces'] ?? [] as $ns) {
+            $securityPolicy->addTrustedNamespace($ns);
+        }
+        if ($securityConfig['allow_anonymous_closures'] ?? false) {
+            $securityPolicy->allowAnonymousClosures(true);
+        }
+        $builder->withSecurityPolicy($securityPolicy);
+
+        // Validasi konfigurasi awal
+        $validator = new ConfigValidator($logger);
+        if (!$validator->validate($config)) {
+            throw new ContainerException("Configuration failed validation. Check logs for details.");
+        }
+
+        // Dependensi yang diketahui yang bisa diinjeksikan ke konstruktor manajer
+        $knownDeps = ['logger' => $logger];
+
+        // Bangun manajer inti
+        $deps = $config['dependencies_implementations'] ?? [];
+        self::buildManager($builder, 'withBindingRegistry', $deps['registry'] ?? [], InMemoryBindingRegistry::class, $logger, $knownDeps);
+        self::buildManager($builder, 'withMonitoring', $deps['monitoring'] ?? [], DefaultMonitoring::class, $logger, $knownDeps);
+        self::buildManager($builder, 'withEventDispatcher', $deps['events'] ?? [], DefaultEventDispatcher::class, $logger, $knownDeps);
+        self::buildManager($builder, 'withSnapshotManager', $deps['snapshot_manager'] ?? [], DefaultSnapshotManager::class, $logger, $knownDeps);
+        self::buildManager($builder, 'withSecretManager', $deps['secret_manager'] ?? [], DefaultSecretManager::class, $logger, $knownDeps);
+        self::buildManager($builder, 'withContextManager', $deps['context_manager'] ?? [], DefaultContextManager::class, $logger, $knownDeps);
+        self::buildManager($builder, 'withDocGenerator', $deps['doc_generator'] ?? [], DefaultDocGenerator::class, $logger, $knownDeps);
+
+        // Konfigurasi fitur opsional
+        $features = $config['features'] ?? [];
+
+        // Aturan arsitektur
+        if (isset($features['architectural_rules']['rules'])) {
+            foreach ($features['architectural_rules']['rules'] as $ruleClass) {
+                if (class_exists($ruleClass) && is_a($ruleClass, ArchitecturalRule::class, true)) {
+                    $builder->withArchitecturalRule(new $ruleClass());
+                } else {
+                    $logger->warning('Invalid architectural rule class configured: ' . $ruleClass);
+                }
+            }
+        }
+
+        // Kontainer induk dan kebijakan delegasi
+        if (($features['parent_container']['enabled'] ?? false) && $parentContainer) {
+            $policyClass = $features['parent_container']['delegation_policy_class'] ?? AllowAllPolicy::class;
+            if (class_exists($policyClass) && is_a($policyClass, DelegationPolicy::class, true)) {
+                try {
+                    $builder->withParent($parentContainer, new $policyClass());
+                } catch (Throwable $e) {
+                    $logger->error("Failed to set parent container with policy '{$policyClass}': " . $e->getMessage());
+                }
+            } else {
+                $logger->warning('Invalid delegation policy class configured: ' . $policyClass);
+                // Fallback ke kebijakan default jika kelas tidak valid
+                $builder->withParent($parentContainer, new AllowAllPolicy());
+            }
+        }
+
+        // Bangun kontainer
+        $container = $builder->build();
+
+        // Daftarkan definisi layanan, alias, tag, dan dekorator
+        $serviceDefinitions = $config['service_definitions'] ?? [];
+
+        foreach ($serviceDefinitions['bindings'] ?? [] as $id => $definition) {
+            $factory = $definition['factory'];
+            if (!$securityPolicy->isTrusted($factory)) {
+                $logger->error("Untrusted factory for binding '{$id}'. Skipping.", ['factory' => $factory]);
+                continue;
+            }
+            $options = $definition['options'] ?? [];
+
+            // Handle kasus di mana 'factory' adalah nilai langsung (array, string, dll)
+            // Ubah menjadi closure sederhana yang mengembalikan nilai tersebut.
+            if (is_array($factory) && !is_callable($factory)) {
+                $value = $factory;
+                $factory = fn() => $value;
+            }
+
+            try {
+                $container->bind($id, $factory, $options);
+                if (isset($definition['strict_type'])) {
+                    $container->setStrictType($id, $definition['strict_type']);
+                }
+                if (isset($definition['expiry'])) {
+                    $container->setExpiry($id, $definition['expiry']['ttl'] ?? 0, $definition['expiry']['sliding'] ?? false);
+                }
+                foreach ($definition['tags'] ?? [] as $tag) {
+                    $container->tag($id, $tag);
+                }
+            } catch (Throwable $e) {
+                $logger->error("Failed to bind service '{$id}': " . $e->getMessage());
+            }
+        }
+
+        foreach ($serviceDefinitions['aliases'] ?? [] as $alias => $target) {
+            try {
+                $container->alias($alias, $target);
+            } catch (Throwable $e) {
+                $logger->error("Failed to set alias '{$alias}' to '{$target}': " . $e->getMessage());
+            }
+        }
+
+        // Tagging tambahan yang mungkin tidak terkait langsung dengan binding
+        foreach ($serviceDefinitions['tags_only'] ?? [] as $tag => $ids) {
+            foreach ($ids as $id) {
+                try {
+                    $container->tag($id, $tag);
+                } catch (Throwable $e) {
+                    $logger->warning("Failed to tag '{$id}' with '{$tag}': " . $e->getMessage());
+                }
+            }
+        }
+
+        // Dekorator tambahan
+        foreach ($serviceDefinitions['decorators_only'] ?? [] as $id => $decorators) {
+            foreach ($decorators as $decorator) {
+                if (is_callable($decorator) && $securityPolicy->isTrusted($decorator)) {
+                    try {
+                        $container->decorate($id, $decorator);
+                    } catch (Throwable $e) {
+                        $logger->error("Failed to apply decorator to '{$id}': " . $e->getMessage());
+                    }
+                } else {
+                    $logger->warning("Invalid or untrusted decorator for '{$id}'. Skipping.", ['decorator' => $decorator]);
+                }
+            }
+        }
+
+        // Segel kontainer jika diatur untuk produksi
+        if ($coreSettings['seal_in_production'] ?? false) {
+            $container->seal();
+        }
+
+        return $container;
+    }
+
+    /**
+     * Metode pembantu untuk membangun manajer inti kontainer.
+     * Mencoba membuat instance manajer menggunakan refleksi untuk injeksi dependensi konstruktor.
+     *
+     * @param ContainerBuilder $builder Instance builder kontainer.
+     * @param string $method Nama metode builder untuk menetapkan manajer (misalnya, 'withBindingRegistry').
+     * @param array $config Konfigurasi untuk manajer tertentu.
+     * @param string $defaultClass Nama kelas default untuk manajer jika tidak ditentukan atau gagal.
+     * @param LoggerInterface $logger Logger untuk mencatat pesan.
+     * @param array $knownDeps Dependensi yang diketahui yang dapat diinjeksikan ke konstruktor manajer.
+     * @return void
+     */
+    private static function buildManager(ContainerBuilder $builder, string $method, array $config, string $defaultClass, LoggerInterface $logger, array $knownDeps): void
+    {
+        if (!($config['enabled'] ?? true)) {
+            return; // Manajer dinonaktifkan
+        }
+
+        $class = $config['class'] ?? $defaultClass;
+
+        if (class_exists($class)) {
+            try {
+                $reflector = new ReflectionClass($class);
+                $constructor = $reflector->getConstructor();
+                $params = [];
+
+                if ($constructor) {
+                    foreach ($constructor->getParameters() as $param) {
+                        $type = $param->getType();
+                        if ($type instanceof \ReflectionNamedType && isset($knownDeps[$type->getName()])) {
+                            $params[] = $knownDeps[$type->getName()];
+                        } elseif ($param->isDefaultValueAvailable()) {
+                            $params[] = $param->getDefaultValue();
+                        } else {
+                            throw new ContainerException("Cannot auto-wire constructor for manager '{$class}'. Missing dependency for parameter '{$param->getName()}'.");
+                        }
+                    }
+                }
+                // Panggil metode builder dengan instance manajer yang dibuat
+                $builder->$method($reflector->newInstanceArgs($params));
+            } catch (Throwable $e) {
+                $logger->error("Failed to build manager '{$class}': " . $e->getMessage());
+                // Fallback ke implementasi default jika pembangunan gagal
+                $builder->$method(new $defaultClass(...array_values($knownDeps)));
+            }
+        } else {
+            $logger->warning("Manager class not found: {$class}. Using default implementation.");
+            // Fallback ke implementasi default jika kelas tidak ditemukan
+            $builder->$method(new $defaultClass(...array_values($knownDeps)));
+        }
+    }
+}
+
+
+// ======== END OF /storage/emulated/0/PHP-PROJECT/Core/Container/ContainerFactory.php ========
+
